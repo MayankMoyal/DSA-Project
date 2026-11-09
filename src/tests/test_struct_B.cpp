@@ -42,9 +42,9 @@ int main() {
         chain.insert(i);
     }
     assert(chain.height() == 19);
-    cout<<"height after 20 sorted inserts: "<<chain.height()<<'\n';
+    cout<<"Height after 20 sorted inserts: "<<chain.height()<<'\n';
 
-    cout<<"stage 1 tests passed"<<'\n';
+    cout<<"Tests passed"<<'\n';
     return 0;
 
 }
