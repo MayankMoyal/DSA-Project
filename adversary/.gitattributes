@@ -1,0 +1,5 @@
+*.h text eol=lf
+*.cpp text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+results/** -text
