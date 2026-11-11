@@ -1,4 +1,5 @@
 #include "scapegoat_tree.h"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -27,16 +28,10 @@ void ScapegoatTree::destroy(Node* v) {
 }
 
 Node* ScapegoatTree::insertNode(Node* v, ll key) {
-    if (v == nullptr) {
-        return new Node(key);
-    }
+    if (v == nullptr) return new Node(key);
 
-    if (key < v->key) {
-        v->left = insertNode(v->left, key);
-    }
-    else if (key > v->key) {
-        v->right = insertNode(v->right, key);
-    }
+    if (key < v->key) v->left = insertNode(v->left, key);
+    else if (key > v->key) v->right = insertNode(v->right, key);
 
     return v;
 }
@@ -53,7 +48,7 @@ void ScapegoatTree::insert(ll key) {
 
         if (key < cur->key) cur = cur->left;
         else if (key > cur->key) cur = cur->right;
-        else return; 
+        else return;
     }
 
     Node* fresh = new Node(key);
@@ -71,7 +66,64 @@ void ScapegoatTree::insert(ll key) {
     if (depth > static_cast<int>(logInvAlpha(max_n))) {
         rebuildAtScapegoat();
     }
+}
 
+Node* ScapegoatTree::findMin(Node* v) const {
+    while (v != nullptr && v->left != nullptr) {
+        v = v->left;
+    }
+    return v;
+}
+
+Node* ScapegoatTree::eraseNode(Node* v, ll key, bool& erased) {
+    if (v == nullptr) return nullptr;
+
+    if (key < v->key) {
+        v->left = eraseNode(v->left, key, erased);
+    }
+    else if (key > v->key) {
+        v->right = eraseNode(v->right, key, erased);
+    }
+    else {
+        erased = true;
+
+        if (v->left == nullptr) {
+            Node* next = v->right;
+            delete v;
+            return next;
+        }
+        if (v->right == nullptr) {
+            Node* next = v->left;
+            delete v;
+            return next;
+        }
+
+        Node* successor = findMin(v->right);
+        v->key = successor->key;
+
+        bool removedSuccessor = false;
+        v->right = eraseNode(v->right, successor->key, removedSuccessor);
+    }
+
+    return v;
+}
+
+bool ScapegoatTree::erase(ll key) {
+    bool erased = false;
+    root = eraseNode(root, key, erased);
+
+    if (!erased) return false;
+
+    n--;
+
+    if (n < alpha * max_n) {
+        vector<Node*> nodes;
+        flatten(root, nodes);
+        root = buildBalanced(nodes, 0, static_cast<int>(nodes.size()) - 1);
+        max_n = n;
+    }
+
+    return true;
 }
 
 bool ScapegoatTree::contains(ll key) const {
@@ -105,7 +157,7 @@ int ScapegoatTree::heightOf(Node* v) const {
     int leftHeight = heightOf(v->left);
     int rightHeight = heightOf(v->right);
 
-    return 1 + max(leftHeight, rightHeight);
+    return max(leftHeight, rightHeight) + 1;
 }
 
 int ScapegoatTree::height() const {
@@ -126,11 +178,10 @@ double ScapegoatTree::logInvAlpha(int value) const {
     return log(static_cast<double>(value)) / log(1.0 / alpha);
 }
 
-
 void ScapegoatTree::rebuildAtScapegoat() {
     if (path.size() < 2) return;
 
-    for (int i = static_cast<int>(path.size())-2; i>=0; i--) {
+    for (int i = static_cast<int>(path.size()) - 2; i >= 0; i--) {
         Node* parent = path[i];
         Node* child = path[i + 1];
 
@@ -142,16 +193,11 @@ void ScapegoatTree::rebuildAtScapegoat() {
 
             if (i == 0) {
                 root = rebuilt;
-            } 
-            else {
-                Node* grandparent = path[i-1];
+            } else {
+                Node* grandparent = path[i - 1];
 
-                if (grandparent->left == parent) {
-                    grandparent->left = rebuilt;
-                } 
-                else {
-                    grandparent->right = rebuilt;
-                }
+                if (grandparent->left == parent) grandparent->left = rebuilt;
+                else grandparent->right = rebuilt;
             }
             return;
         }
