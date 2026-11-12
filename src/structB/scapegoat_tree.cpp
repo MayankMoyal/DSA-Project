@@ -5,8 +5,8 @@
 #include <stdexcept>
 using namespace std;
 
-ScapegoatTree::ScapegoatTree(double a) {
-    if (a <= 0.5 || a >= 1.0) {
+ScapegoatTree::ScapegoatTree(double a, RebuildMode mode) {
+    if (!isfinite(a) || a <= 0.5 || a >= 1.0) {
         throw invalid_argument("alpha must be between 0.5 and 1");
     }
 
@@ -14,6 +14,7 @@ ScapegoatTree::ScapegoatTree(double a) {
     alpha = a;
     n = 0;
     max_n = 0;
+    rebuildMode = mode;
 }
 
 ScapegoatTree::~ScapegoatTree() {
@@ -59,6 +60,8 @@ void ScapegoatTree::insert(ll key) {
 
     path.push_back(fresh);
     n++;
+    stats.insertions++;
+
     if (n > max_n) max_n = n;
 
     int depth = static_cast<int>(path.size()) - 1;
@@ -115,11 +118,10 @@ bool ScapegoatTree::erase(ll key) {
     if (!erased) return false;
 
     n--;
+    stats.deletions++;
 
     if (n < alpha * max_n) {
-        vector<Node*> nodes;
-        flatten(root, nodes);
-        root = buildBalanced(nodes, 0, static_cast<int>(nodes.size()) - 1);
+        rebuildAll();
         max_n = n;
     }
 
@@ -173,6 +175,29 @@ int ScapegoatTree::countNodes(Node* v) const {
     return 1 + countNodes(v->left) + countNodes(v->right);
 }
 
+void ScapegoatTree::collectDepthStats(
+    Node* v, int depth, DepthStats& result) const {
+
+    if (v == nullptr) return;
+
+    result.count++;
+    result.sum_depth += depth;
+    result.height = max(result.height, depth);
+
+    collectDepthStats(v->left, depth + 1, result);
+    collectDepthStats(v->right, depth + 1, result);
+}
+
+DepthStats ScapegoatTree::depthStats() const {
+    DepthStats result;
+    collectDepthStats(root, 0, result);
+    return result;
+}
+
+double ScapegoatTree::averageDepth() const {
+    return depthStats().average();
+}
+
 double ScapegoatTree::logInvAlpha(int value) const {
     if (value <= 1) return 0.0;
     return log(static_cast<double>(value)) / log(1.0 / alpha);
@@ -190,6 +215,7 @@ void ScapegoatTree::rebuildAtScapegoat() {
 
         if (childSize > alpha * parentSize) {
             Node* rebuilt = rebuildSubtree(parent);
+            stats.scapegoat_rebuilds++;
 
             if (i == 0) {
                 root = rebuilt;
@@ -212,7 +238,9 @@ void ScapegoatTree::flatten(Node* v, vector<Node*>& nodes) {
     flatten(v->right, nodes);
 }
 
-Node* ScapegoatTree::buildBalanced(vector<Node*>& nodes, int low, int high) {
+Node* ScapegoatTree::buildBalanced(
+    vector<Node*>& nodes, int low, int high) {
+
     if (low > high) return nullptr;
 
     int mid = low + (high - low) / 2;
@@ -224,8 +252,112 @@ Node* ScapegoatTree::buildBalanced(vector<Node*>& nodes, int low, int high) {
     return v;
 }
 
-Node* ScapegoatTree::rebuildSubtree(Node* v) {
-    vector<Node*> nodes;
-    flatten(v, nodes);
-    return buildBalanced(nodes, 0, static_cast<int>(nodes.size()) - 1);
+
+void ScapegoatTree::treeToVine(Node* pseudoRoot, int& nodeCount) {
+    Node* tail = pseudoRoot;
+    Node* rest = tail->right;
+
+    while (rest != nullptr) {
+        if (rest->left != nullptr) {
+            Node* child = rest->left;
+            rest->left = child->right;
+            child->right = rest;
+            tail->right = child;
+            rest = child;
+            stats.stout_warren_rotations++;
+        } else {
+            nodeCount++;
+            tail = rest;
+            rest = rest->right;
+        }
+    }
 }
+
+void ScapegoatTree::compress(Node* pseudoRoot, int rotations) {
+    Node* scanner = pseudoRoot;
+
+    for (int i = 0; i < rotations; i++) {
+        Node* child = scanner->right;
+        if (child == nullptr || child->right == nullptr) break;
+
+        Node* grandchild = child->right;
+        scanner->right = grandchild;
+        child->right = grandchild->left;
+        grandchild->left = child;
+
+        scanner = grandchild;
+        stats.stout_warren_rotations++;
+    }
+}
+
+Node* ScapegoatTree::rebuildStoutWarren(Node* v, int nodeCount) {
+    Node pseudoRoot(0);
+    pseudoRoot.right = v;
+
+    int counted = 0;
+    treeToVine(&pseudoRoot, counted);
+
+    int m = 1;
+    while (m <= nodeCount + 1) m *= 2;
+    m = m/2 - 1;
+
+    compress(&pseudoRoot, nodeCount - m);
+
+    while (m > 1) {
+        m /= 2;
+        compress(&pseudoRoot, m);
+    }
+
+    return pseudoRoot.right;
+}
+
+Node* ScapegoatTree::rebuildSubtree(Node* v) {
+    int subtreeSize = countNodes(v);
+    stats.nodes_rebuilt += subtreeSize;
+
+    if (rebuildMode == ARRAY_REBUILD) {
+        vector<Node*> nodes;
+        nodes.reserve(subtreeSize);
+        flatten(v, nodes);
+        stats.array_rebuilds++;
+        return buildBalanced(nodes, 0, static_cast<int>(nodes.size()) - 1);
+    }
+
+    stats.stout_warren_rebuilds++;
+    return rebuildStoutWarren(v, subtreeSize);
+}
+
+void ScapegoatTree::rebuildAll() {
+    if (root == nullptr) {
+        stats.whole_tree_rebuilds++;
+        return;
+    }
+
+    root = rebuildSubtree(root);
+    stats.whole_tree_rebuilds++;
+}
+
+void ScapegoatTree::setRebuildMode(RebuildMode mode) {
+    rebuildMode = mode;
+}
+
+RebuildMode ScapegoatTree::getRebuildMode() const {
+    return rebuildMode;
+}
+
+const RebuildStats& ScapegoatTree::getRebuildStats() const {
+    return stats;
+}
+
+void ScapegoatTree::resetRebuildStats() {
+    stats = RebuildStats{};
+}
+
+
+
+
+
+
+
+
+
