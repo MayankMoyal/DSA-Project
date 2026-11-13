@@ -68,6 +68,9 @@ public:
     RebuildMode getRebuildMode() const;
 
     void rebuildAll();
+    int getMaxN() const;
+    vector<ll> toVector() const;
+    bool checkInvariants() const;
     const RebuildStats& getRebuildStats() const;
     void resetRebuildStats();
 
@@ -81,7 +84,6 @@ private:
     vector<Node*> path;
     RebuildStats stats;
 
-    Node* insertNode(Node* v, ll key);
     Node* findMin(Node* v) const;
     Node* eraseNode(Node* v, ll key, bool& erased);
 
@@ -91,6 +93,7 @@ private:
     void destroy(Node* v);
 
     void collectDepthStats(Node* v, int depth, DepthStats& result) const;
+    void collectInorder(Node* v, vector<ll>& result) const;
 
     double logInvAlpha(int value) const;
     void rebuildAtScapegoat();
