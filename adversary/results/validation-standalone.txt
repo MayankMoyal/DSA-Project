@@ -1,0 +1,6 @@
+Adversary checks passed: 200000 generated pairs, all five insertion patterns, invalid inputs and boundary keys
+Validated 10000 pairs; n=31; trace_hash=7006604354095580726
+Validated 10000 pairs; n=31; trace_hash=18010675888391910640
+Validated 10000 pairs; n=31; trace_hash=15557475472608527204
+Validated 10000 pairs; n=31; trace_hash=3101863046229666739
+Standalone generator, CLI, replay validation, reproducibility and malformed-trace checks passed
