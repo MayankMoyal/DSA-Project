@@ -1,0 +1,37 @@
+{
+  "status": "pass",
+  "reviewed_utc": "2026-11-16T09:29:21.562048+00:00",
+  "documents": [
+    {
+      "code": "D1",
+      "pages": 1,
+      "review": "All rendered pages inspected: readable text, correct labels, no clipping/overlap; D5 diagram and citations verified."
+    },
+    {
+      "code": "D2",
+      "pages": 1,
+      "review": "All rendered pages inspected: readable text, correct labels, no clipping/overlap; D5 diagram and citations verified."
+    },
+    {
+      "code": "D3",
+      "pages": 1,
+      "review": "All rendered pages inspected: readable text, correct labels, no clipping/overlap; D5 diagram and citations verified."
+    },
+    {
+      "code": "D4",
+      "pages": 1,
+      "review": "All rendered pages inspected: readable text, correct labels, no clipping/overlap; D5 diagram and citations verified."
+    },
+    {
+      "code": "D5",
+      "pages": 3,
+      "review": "All rendered pages inspected: readable text, correct labels, no clipping/overlap; D5 diagram and citations verified."
+    },
+    {
+      "code": "D6",
+      "pages": 1,
+      "review": "All rendered pages inspected: readable text, correct labels, no clipping/overlap; D5 diagram and citations verified."
+    }
+  ],
+  "figures": "All ten figures inspected in two contact sheets; axes, legends, reference curves and SD bands readable."
+}

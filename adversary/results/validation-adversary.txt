@@ -1,0 +1,1 @@
+Adversary checks passed: 200000 generated pairs, all five insertion patterns, invalid inputs and boundary keys
