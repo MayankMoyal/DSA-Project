@@ -5,6 +5,9 @@
 #include <stdexcept>
 #include <limits>
 #include <vector>
+#include <algorithm>
+#include <random>
+#include <string>
 
 using churn::HibbardBst;
 using churn::DeletionPolicy;
@@ -154,6 +157,41 @@ void test_policy_rng_progression() {
         require(tree.metrics().height == 2, "policy RNG did not advance exactly once");
     }
 }
+void test_sorted_array_differential(DeletionPolicy policy) {
+    HibbardBst tree(policy, 89);
+    std::vector<Key> expected;
+    std::mt19937_64 random(123456);
+
+    for (int step = 0; step < 40'000; ++step) {
+        const Key key = static_cast<Key>(random() % 257) - 128;
+        const auto position = std::lower_bound(expected.begin(), expected.end(), key);
+        const bool present = position != expected.end() && *position == key;
+
+        switch (random() % 3) {
+        case 0:
+            require(tree.insert(key) == !present, "differential insert status");
+            if (!present) {
+                expected.insert(position, key);
+            }
+            break;
+        case 1:
+            require(tree.erase(key) == present, "differential erase status");
+            if (present) {
+                expected.erase(position);
+            }
+            break;
+        default:
+            require(tree.contains(key) == present, "differential membership");
+            break;
+        }
+
+        if (!tree.validate() || tree.inorder() != expected) {
+            throw std::runtime_error(
+                "differential state mismatch at step " + std::to_string(step)
+            );
+        }
+    }
+}
 int main() {
     try {
         test_insert_and_lookup();
@@ -161,6 +199,9 @@ int main() {
         test_order_and_bounds();
         test_metrics();
         test_replacement_policies();
+        test_policy_rng_progression();
+        test_sorted_array_differential(DeletionPolicy::AlwaysSuccessor);
+        test_sorted_array_differential(DeletionPolicy::RandomPredecessorOrSuccessor);
         std::cout << "Structure A focused checks passed\n";
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
