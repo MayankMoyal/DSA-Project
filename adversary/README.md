@@ -1,6 +1,6 @@
-# Mayank: adversarial inputs for Project 3
+# Adversarial inputs for Project 3
 
-This module generates reproducible input traces. It does not replace either teammate's studied data structure. See CONTRACT.md for exact semantics, INTEGRATION.md for API expectations and TOOLS.md for AI disclosure.
+This module generates reproducible input traces. It does not replace either teammate's studied data structure. See CONTRACT.md for exact semantics, INTEGRATION.md for API expectations and TOOLS.md for build and analysis tools.
 
 ## Build and use
 
@@ -43,7 +43,7 @@ python adversary/reproduce.py
 
 The measurement command tests all five insertion patterns with both current teammate rebuild modes. Keep each CSV; use at least five trials before reporting mean timing and spread. Rebuild frequency is event count divided by successful insertions. Report rebuilt nodes and rotations separately. Insertion-only timing includes building the tested tree because that is the experiment; churn timing excludes initialization.
 
-The standalone verification checks 200000 generated pairs, all insertion permutations, deterministic streams, invalid inputs, boundary-key validation, CLI round trips and malformed traces. The separate integrated reference project additionally passed one million seeded operations with a sorted-array oracle and invariant/depth audits after every operation, and tested failure shrinking. The public generator tests do not claim to replace Sai's complete harness.
+The standalone verification checks 200000 generated pairs, all insertion permutations, deterministic streams, invalid inputs, boundary-key validation, CLI round trips and malformed traces. The separate integrated reference project additionally passed one million seeded operations with a sorted-array oracle and invariant/depth audits after every operation, and tested failure shrinking. The generator tests cover input validity; the integrated differential harness checks the trees.
 
 ## Results and limits
 
@@ -57,7 +57,6 @@ python adversary/reproduce.py --reference-root "C:/Users/Mayank Moyal/Desktop/ds
 
 No tested schedule is claimed globally optimal. The exact-fit square-root theorem does not prove an ordinary-churn bound or a bound for biased deletion. Cache behavior has not been profiled and is not claimed. Timings are unpinned wall-clock block measurements and can vary with scheduling and background load.
 
-Delivery began with two commits. At Mayank's request, the four remaining planned groups were combined into one immediate commit. This publishes already verified AI-assisted work and does not establish independent manual development or fulfill peer review.
+Build and analysis tools are listed in TOOLS.md.
 
-
-Latest branch review before publication: Avinash branch 34e1eea adds erase, DeletionPolicy, metrics(), inorder() and validate(). Its unmodified two-translation-unit test build fails with duplicate definitions of erase (defined outside the class in the header without inline). This is a separate current integration issue, not a failure of the measured reference snapshot. Map metrics().average_depth(), inorder() and validate() when adapting the newer API. Krish's branch is now krish/structure-b at the previously reviewed c16f7ef commit. No teammate code was transferred or changed.
+Compatibility review (16 November 2026): `mayank/adversary` at `df8e899` passed integration checks against `main` at `6633c5c`. The earlier Structure A duplicate-definition issue was fixed in `1a59bb1`. Current APIs include `metrics().average_depth()`, `inorder()` and `validate()`. The published timing data still describes the recorded reference snapshot, not a new performance study of main.

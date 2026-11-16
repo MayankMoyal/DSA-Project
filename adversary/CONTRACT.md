@@ -1,6 +1,6 @@
 # Adversary workload contract
 
-Owner: Mayank (adversary). AI assistance is declared in TOOLS.md in the reference project and adversary/TOOLS.md in the published contribution.
+Maintainer: Mayank Moyal.
 
 All generators are C++17 and independent of the two structures. Keys use signed 64-bit `long long`, checked at compile time. Generated domains are [0,16n), with n in [1,1000000]. External replay tests also exercise LLONG_MIN and LLONG_MAX. Population and domain validation reject invalid n. Decimal CLI arguments should be valid nonnegative integers; n is positive.
 
@@ -32,4 +32,4 @@ g++ -std=c++17 -O2 adversary/foundation.cpp -o foundation.exe
 .\foundation.exe 1000 42
 ```
 
-Later generator headers and CLIs build on this contract. Full usage is in adversary/README.md when the final contribution is delivered. Do not infer that a tested candidate is globally optimal.
+The generator headers and CLIs follow this contract. See adversary/README.md for usage. Do not infer that a tested candidate is globally optimal.

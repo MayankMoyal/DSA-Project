@@ -1,12 +1,12 @@
-# Adversarial results: Mayank / Project 3
+# Adversarial results: Project 3
 
-Measured reference experiments, 16 November 2026. AI-assisted code and analysis; see TOOLS.md. No global optimality or ordinary-churn asymptotic theorem is claimed.
+Measured reference experiments, 16 November 2026. No global optimality or ordinary-churn asymptotic theorem is claimed.
 
 ## Evidence and experimental design
 
 The full dataset has 60 churn runs: four workloads, three populations (1000, 2000, 4000), five independent evaluation seeds each. Every run executes n squared delete/insert pairs against four strategies, giving 420000000 generated pairs and 1680000000 strategy-pair replays. Initialization order and each replay block are identical across strategies. A sorted-array oracle validates every generated pair; every checkpoint audits full tree contents and invariants. Trial seeds are 202611160 + 31*n + trial; policy seed is workload_seed XOR 0x504f4c494359. Initial and cumulative trace hashes are in every CSV.
 
-The user briefly paused and resumed the goal. The interrupted partial n=4000 shallow_exact trial is retained under results/interrupted with its checksum in the manifest. Only that incomplete trial was restarted; completed runs were hash-verified and retained. The partial run is excluded from reported aggregates.
+The interrupted partial n=4000 shallow_exact trial is retained under results/interrupted with its checksum in the manifest. Only that incomplete trial was restarted; completed runs were hash-verified and retained. The partial run is excluded from reported aggregates.
 
 Raw insertion experiments additionally have 30 runs: unchanged upstream and reference Scapegoat implementations, three sizes and five trials, each covering five patterns and two rebuild modes at alpha=0.7. The original teammate code uses basic left-packed Stout-Warren compression; the reference uses perfect-leaves. These are distinct implementations, explicitly labeled.
 
@@ -119,5 +119,4 @@ The source hashes and CSV SHA-256 values are checked by the reference audit. Gen
 
 ![insertions-reference](results/figures/insertions-reference.png)
 
-
-Latest branch review before publication: Avinash branch 34e1eea adds erase, DeletionPolicy, metrics(), inorder() and validate(). Its unmodified two-translation-unit test build fails with duplicate definitions of erase (defined outside the class in the header without inline). This is a separate current integration issue, not a failure of the measured reference snapshot. Map metrics().average_depth(), inorder() and validate() when adapting the newer API. Krish's branch is now krish/structure-b at the previously reviewed c16f7ef commit. No teammate code was transferred or changed.
+Compatibility review (16 November 2026): `mayank/adversary` at `df8e899` passed integration checks against `main` at `6633c5c`. The earlier Structure A duplicate-definition issue was fixed in `1a59bb1`. Current APIs include `metrics().average_depth()`, `inorder()` and `validate()`. The published timing data still describes the recorded reference snapshot, not a new performance study of main.

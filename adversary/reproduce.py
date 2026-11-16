@@ -7,7 +7,7 @@ import sys
 ROOT=Path(__file__).resolve().parents[1]
 
 def main():
-    parser=argparse.ArgumentParser(description='Verify Mayank\'s standalone contribution and optionally rerun the separate reference project.')
+    parser=argparse.ArgumentParser(description='Verify the adversary module and optionally rerun the separate reference project.')
     parser.add_argument('--reference-root',type=Path)
     args=parser.parse_args()
     subprocess.run([sys.executable,str(ROOT/'adversary/verify.py')],check=True)
@@ -32,6 +32,6 @@ def main():
         subprocess.run([sys.executable,str(reference/'scripts/run_all.py'),'--full'],cwd=reference,check=True)
     else:
         print('Full churn measurements used the separately staged reference project; pass --reference-root to rerun it.')
-        print('The measured base snapshot of Structure A lacks erase/depth APIs; review the latest branch separately. No teammate draft is bundled as Mayank\'s contribution.')
+        print('Published churn timings use the recorded reference snapshot. See INTEGRATION.md for compatibility with main.')
 
 if __name__=='__main__': main()
