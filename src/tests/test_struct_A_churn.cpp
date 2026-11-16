@@ -98,7 +98,7 @@ void verify_churn(std::size_t n) {
     }
 }
 
-}  // namespace
+}  
 
 int main() {
     try {

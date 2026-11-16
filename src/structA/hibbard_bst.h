@@ -53,35 +53,4 @@ private:
     DeletionPolicy policy_;
     std::mt19937_64 policy_rng_;
 };
-bool HibbardBst::erase(Key key) noexcept {
-    Node** link = find_link(key);
-    Node* node = *link;
-
-    if (!node) {
-        return false;
-    }
-
-    if (!node->left || !node->right) {
-        *link = node->left ? node->left : node->right;
-    } else {
-    const bool successor = use_successor();
-    Node** replacement_link = successor ? &node->right : &node->left;
-
-    while (successor ? (*replacement_link)->left : (*replacement_link)->right) {
-        replacement_link = successor
-            ? &(*replacement_link)->left
-            : &(*replacement_link)->right;
-    }
-
-    Node* replacement = *replacement_link;
-    node->key = replacement->key;
-    *replacement_link = successor ? replacement->right : replacement->left;
-    node = replacement;
 }
-
-    delete node;
-    --size_;
-    return true;
-}
-
-} 
