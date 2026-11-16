@@ -2,7 +2,7 @@
 
 ## What the project does
 
-This project studies how search trees behave when keys are repeatedly deleted and inserted. It compares an iterative binary search tree with two Hibbard deletion policies (always use the successor or choose randomly between predecessor and successor) against a scapegoat tree with array-based and in-place Stout–Warren rebuilding. The planned churn experiment keeps the live set at 1,000, 2,000, or 4,000 keys and runs at least n² delete–insert pairs per size, tracking average node depth and rebuilding behavior.
+This project studies how search trees behave when keys are repeatedly deleted and inserted. It compares an iterative binary search tree with two Hibbard deletion policies (always use the successor or choose randomly between predecessor and successor) against a scapegoat tree with array-based and in-place Stout–Warren rebuilding. The churn experiment keeps the live set at 1,000, 2,000, or 4,000 keys and runs at least n² delete–insert pairs per size, tracking average node depth and rebuilding behavior.
 
 ## Build and run on Windows
 
@@ -19,7 +19,7 @@ Copy the next line as one CMD command. It builds each executable with GCC, runs 
 g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp src/tests/test_struct_A.cpp -o "%TEMP%\churn-tests-a.exe" && "%TEMP%\churn-tests-a.exe" && g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structB src/structB/scapegoat_tree.cpp src/tests/test_struct_B.cpp -o "%TEMP%\churn-tests-b.exe" && "%TEMP%\churn-tests-b.exe" && g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp src/tests/test_struct_A_churn.cpp -o "%TEMP%\churn-verify-a.exe" && "%TEMP%\churn-verify-a.exe" && g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp bench/bst_baseline.cpp -o "%TEMP%\churn-baseline.exe" && "%TEMP%\churn-baseline.exe" > "%TEMP%\churn-baseline.csv"
 ```
 
-The baseline CSV is written to `%TEMP%\churn-baseline.csv`. The Structure A verifier checks 21 million pairs per policy across the three sizes. The shared application and full comparative benchmark suite are pending integration. Once their entry points are available, extend this command to run them as part of the same sequence.
+The baseline CSV is written to `%TEMP%\churn-baseline.csv`. The Structure A verifier checks 21 million pairs per policy across the three sizes. For the full four-strategy comparison, follow the [analyst build and replay guide](bench/ANALYST_GUIDE.md). The [experiment report](REPORT.md) includes the predictions, five-trial results and depth figures.
 
 ## Team roles
 
