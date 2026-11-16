@@ -126,6 +126,34 @@ void test_replacement_policies() {
     require(immediate_predecessor.metrics().height == 1,
             "immediate predecessor splice failed");
 }
+void test_policy_rng_progression() {
+    for (int scenario = 0; scenario < 3; ++scenario) {
+        HibbardBst tree(DeletionPolicy::RandomPredecessorOrSuccessor, 0);
+        add_keys(tree, {10, 5, 7, 6, 20});
+
+        if (scenario == 0) {
+            require(!tree.erase(999), "missing erase succeeded");
+        } else if (scenario == 1) {
+            add_keys(tree, {21});
+            require(tree.erase(21), "leaf erase failed");
+        } else {
+            add_keys(tree, {21, 22});
+            require(tree.erase(21), "one-child erase failed");
+            require(tree.erase(22), "cleanup leaf erase failed");
+        }
+
+        require(tree.erase(10), "first two-child erase failed");
+        expect_keys(tree, {5, 6, 7, 20});
+        require(tree.metrics().height == 3, "an unrelated erase advanced the policy RNG");
+
+        tree.clear();
+        add_keys(tree, {10, 5, 7, 6, 20});
+
+        require(tree.erase(10), "second two-child erase failed");
+        expect_keys(tree, {5, 6, 7, 20});
+        require(tree.metrics().height == 2, "policy RNG did not advance exactly once");
+    }
+}
 int main() {
     try {
         test_insert_and_lookup();
