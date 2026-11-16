@@ -40,4 +40,4 @@ This is **not** the full Project 3 experiment: it does not perform insertion/del
 
 ## AI/tool disclosure
 
-This initial baseline and its README were drafted with ChatGPT assistance on 2026-11-14. They must be disclosed in the team's root `TOOLS.md` before the final tagged release. The owning student should compile, test, review, understand, and document subsequent changes; no performance results are claimed here.
+Compile and run the baseline before collecting results. No performance results are claimed here.

@@ -1,0 +1,19 @@
+{
+  "recorded_date_local": "2026-11-16",
+  "timezone": "Asia/Calcutta",
+  "processor": "Intel(R) Core(TM) i7-14700HX",
+  "physical_cores": 20,
+  "logical_processors": 28,
+  "l2_cache_reported_kib": 28672,
+  "l3_cache_reported_kib": 33792,
+  "visible_memory_kib": 16478072,
+  "os": "Microsoft Windows 11 Home Single Language",
+  "os_version": "10.0.26300",
+  "compiler": "g++.exe (Rev3, Built by MSYS2 project) 16.2.0",
+  "compiler_path": "C:/msys64/ucrt64/bin/g++.exe",
+  "flags": ["-std=c++17", "-O2", "-Wall", "-Wextra", "-Wpedantic"],
+  "timer": "std::chrono::steady_clock",
+  "measurement": "single benchmark process, one thread, block timing excludes generation/oracle/audits/initialization; process not pinned",
+  "cache_profile": "not collected; no cache-behavior claims",
+  "hardware_evidence": "PowerShell Get-CimInstance Win32_Processor and Win32_OperatingSystem; cache values are Windows reported, not independently probed"
+}

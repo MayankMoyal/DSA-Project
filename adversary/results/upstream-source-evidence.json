@@ -1,0 +1,17 @@
+{
+  "base_commit": "066786971c1832f1a59828bbca1a861ae74b1a46",
+  "verified_utc": "2026-11-15T22:27:29.731004+00:00",
+  "files": {
+    "upstream\\src\\structB\\scapegoat_tree.h": {
+      "sha256": "6690307be81750388f15663a007add0a4e3a00af81d6f1bba37e373290cec495",
+      "git_blob": "7990d7507711a559a13a7293177e4923b93673c8",
+      "comparison": "identical to current working tree; matches base blob after CRLF normalization"
+    },
+    "upstream\\src\\structB\\scapegoat_tree.cpp": {
+      "sha256": "f2becf95b16aaa4f8ece7a326e88642b6e5efc186dbbb882970689d3ad0fd3c4",
+      "git_blob": "7296b0e3d040bf2aaa915b630d888c2b194da203",
+      "comparison": "identical to current working tree; matches base blob after CRLF normalization"
+    }
+  },
+  "scope": "Archived unchanged upstream Structure B source used for insertion-only measurements. Formal hashes recorded after smaller-size runs; snapshot was made before experiments. Verified against the original Git commit without backdating."
+}
