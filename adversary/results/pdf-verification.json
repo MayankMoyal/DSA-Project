@@ -1,0 +1,50 @@
+[
+  {
+    "file": "docs\\derivations\\D1.pdf",
+    "pages": 1,
+    "text_and_bounds": "pass",
+    "author": "Codex - reference draft for owner review",
+    "renderer": "Poppler",
+    "visual_review": "rendered; see separate visual review log"
+  },
+  {
+    "file": "docs\\derivations\\D2.pdf",
+    "pages": 1,
+    "text_and_bounds": "pass",
+    "author": "Codex - reference draft for owner review",
+    "renderer": "Poppler",
+    "visual_review": "rendered; see separate visual review log"
+  },
+  {
+    "file": "docs\\derivations\\D3.pdf",
+    "pages": 1,
+    "text_and_bounds": "pass",
+    "author": "Codex - reference draft for owner review",
+    "renderer": "Poppler",
+    "visual_review": "rendered; see separate visual review log"
+  },
+  {
+    "file": "docs\\derivations\\D4.pdf",
+    "pages": 1,
+    "text_and_bounds": "pass",
+    "author": "Codex - reference draft for owner review",
+    "renderer": "Poppler",
+    "visual_review": "rendered; see separate visual review log"
+  },
+  {
+    "file": "docs\\derivations\\D5.pdf",
+    "pages": 3,
+    "text_and_bounds": "pass",
+    "author": "Mayank Moyal (AI assisted)",
+    "renderer": "Poppler",
+    "visual_review": "rendered; see separate visual review log"
+  },
+  {
+    "file": "docs\\derivations\\D6.pdf",
+    "pages": 1,
+    "text_and_bounds": "pass",
+    "author": "Codex - reference draft for owner review",
+    "renderer": "Poppler",
+    "visual_review": "rendered; see separate visual review log"
+  }
+]

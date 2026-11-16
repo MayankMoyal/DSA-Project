@@ -1,0 +1,1 @@
+Independent depth fixtures passed: known seven-node example and both perfect rebuilds near powers of two through 4097

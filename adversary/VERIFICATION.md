@@ -1,0 +1,16 @@
+# Verification evidence and integration limits
+
+The full reference validation passed one million seeded operations across both Hibbard deletion policies and both Scapegoat rebuild methods. The sorted-array oracle, node counts, order, depth and external shrink-state checks run after every differential operation. Independent fixtures check the seven-node directional example, a 12000-node chain, strict rebuild thresholds, invalid alpha values, signed key boundaries and perfect rebuilding near powers of two through 4097.
+
+Standalone adversary verification passed 200000 generated pairs, deterministic replay, all five insertion permutations, invalid inputs and malformed traces. The shrinking test uses a deliberate dropped-deletion fault and produces a verified two-operation 1-minimal trace; no actual tree defect is being claimed by that fixture.
+
+The dataset audit passed all 90 raw files: 60 churn runs and 30 insertion runs. There are 420 million generated pairs and 1.68 billion strategy-pair replays. Every timing group has five runs, with seeds and sample spread recorded. Initial orders match across strategies and candidate workloads. Source hashes, raw-file hashes and the resumed trial's deterministic prefix were checked. The interrupted partial run is retained and excluded from aggregates.
+
+All eight rendered pages of D1-D6 and all ten figures were visually inspected. The PDF verifier initially rejected a line-wrapped authorship label; whitespace normalization corrected that verifier issue, and the affected check passed afterward. D5 is Mayank's AI-assisted contribution. Other derivations and implementations remain clearly labeled reference drafts for their owners' review.
+
+See results/validation-manifest.json, evidence-audit.json, pdf-verification.json and pdf-visual-review.json for recorded evidence. This is tested evidence, not exhaustive correctness or hidden-test certification. No cache claims or globally optimal adversarial schedules are asserted.
+
+Only adversary files and D5 are published. Full churn timing uses the separate general-folder reference project; teammate Structure A requires latest-branch build review and API integration. Peer-reviewed PRs, owner adoption, instructor access, the final tagged release, presentation and viva remain team responsibilities. The original six-commit schedule was superseded by Mayank's request to combine the four remaining groups into one immediate commit after the first two deliveries. This is delivery of already verified work, not evidence of independent manual development. Actual publication hashes and timestamps are recorded in the general-folder delivery ledger and Git history.
+
+
+Latest branch review before publication: Avinash branch 34e1eea adds erase, DeletionPolicy, metrics(), inorder() and validate(). Its unmodified two-translation-unit test build fails with duplicate definitions of erase (defined outside the class in the header without inline). This is a separate current integration issue, not a failure of the measured reference snapshot. Map metrics().average_depth(), inorder() and validate() when adapting the newer API. Krish's branch is now krish/structure-b at the previously reviewed c16f7ef commit. No teammate code was transferred or changed.
