@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <random>
 #include <string>
+#include <cstdint>
 
 using churn::HibbardBst;
 using churn::DeletionPolicy;
@@ -192,6 +193,31 @@ void test_sorted_array_differential(DeletionPolicy policy) {
         }
     }
 }
+void test_skewed_tree() {
+    HibbardBst tree;
+    constexpr Key count = 4'000;
+
+    for (Key key = count; key > 0; --key) {
+        require(tree.insert(key), "descending insertion failed");
+    }
+
+    const auto before = tree.metrics();
+    require(tree.validate() && before.height == count - 1 &&
+                before.internal_path_length ==
+                    static_cast<std::uint64_t>(count * (count - 1) / 2),
+            "wrong metrics for a left chain");
+
+    require(tree.erase(count) && !tree.contains(count),
+            "root splice failed on the chain");
+
+    const auto after = tree.metrics();
+    require(after.size == count - 1 && after.height == count - 2,
+            "wrong shape after removing the chain root");
+
+    tree.clear();
+    expect_keys(tree, {});
+    require(tree.insert(42), "reuse after clearing a skewed tree failed");
+}
 int main() {
     try {
         test_insert_and_lookup();
@@ -202,6 +228,7 @@ int main() {
         test_policy_rng_progression();
         test_sorted_array_differential(DeletionPolicy::AlwaysSuccessor);
         test_sorted_array_differential(DeletionPolicy::RandomPredecessorOrSuccessor);
+        test_skewed_tree();
         std::cout << "Structure A focused checks passed\n";
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
