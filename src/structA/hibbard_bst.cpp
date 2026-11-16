@@ -1,7 +1,13 @@
 #include "hibbard_bst.h"
-
+#include <utility>
 namespace churn {
+HibbardBst::HibbardBst(DeletionPolicy policy, std::uint64_t policy_seed)
+    : policy_(policy), policy_rng_(policy_seed) {}
 
+bool HibbardBst::use_successor() noexcept {
+    return policy_ == DeletionPolicy::AlwaysSuccessor ||
+           (policy_rng_() & 1ULL) == 0;
+}
 HibbardBst::~HibbardBst() noexcept {
     clear();
 }
@@ -114,4 +120,40 @@ bool HibbardBst::validate() const {
 
     return visited == size_;
 }
+double TreeMetrics::average_depth() const noexcept {
+    if (size == 0) {
+        return 0.0;
+    }
+    return static_cast<double>(internal_path_length) / static_cast<double>(size);
+}
+
+TreeMetrics HibbardBst::metrics() const {
+    TreeMetrics result;
+    std::vector<std::pair<const Node*, std::ptrdiff_t>> pending;
+
+    if (root_) {
+        pending.emplace_back(root_, 0);
+    }
+
+    while (!pending.empty()) {
+        const auto [node, depth] = pending.back();
+        pending.pop_back();
+
+        ++result.size;
+        result.internal_path_length += static_cast<std::uint64_t>(depth);
+        if (depth > result.height) {
+            result.height = depth;
+        }
+
+        if (node->right) {
+            pending.emplace_back(node->right, depth + 1);
+        }
+        if (node->left) {
+            pending.emplace_back(node->left, depth + 1);
+        }
+    }
+
+    return result;
+}
+
 }  

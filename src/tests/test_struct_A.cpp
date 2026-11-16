@@ -7,6 +7,7 @@
 #include <vector>
 
 using churn::HibbardBst;
+using churn::DeletionPolicy;
 using Key = HibbardBst::Key;
 
 void require(bool condition, const char* message) {
@@ -76,11 +77,62 @@ void test_order_and_bounds() {
     require(tree.erase(0), "interior key erase failed");
     expect_keys(tree, {low, -1, 1, high});
 }
+void test_metrics() {
+    HibbardBst tree;
+    const auto empty = tree.metrics();
+
+    require(empty.size == 0 && empty.height == -1 &&
+                empty.internal_path_length == 0 && empty.average_depth() == 0.0,
+            "empty metric conventions");
+
+    add_keys(tree, {10, 5, 20, 15, 17});
+    const auto before = tree.metrics();
+
+    require(before.size == 5 && before.height == 3 &&
+                before.internal_path_length == 7 &&
+                before.average_depth() == 7.0 / 5.0,
+            "wrong depth or IPL before deletion");
+
+    require(tree.erase(10), "measured root erase failed");
+    const auto after = tree.metrics();
+
+    require(after.size == 4 && after.height == 2 &&
+                after.internal_path_length == 4 && after.average_depth() == 1.0,
+            "wrong depth or IPL after deletion");
+}
+void test_replacement_policies() {
+    HibbardBst fixed(DeletionPolicy::AlwaysSuccessor, 3);
+    add_keys(fixed, {10, 5, 7, 6, 20});
+    require(fixed.erase(10), "fixed-policy erase failed");
+    expect_keys(fixed, {5, 6, 7, 20});
+    require(fixed.metrics().height == 3, "fixed policy must choose successor");
+
+    HibbardBst random_successor(DeletionPolicy::RandomPredecessorOrSuccessor, 0);
+    add_keys(random_successor, {10, 5, 7, 6, 20});
+    require(random_successor.erase(10), "random successor erase failed");
+    expect_keys(random_successor, {5, 6, 7, 20});
+    require(random_successor.metrics().height == 3, "seed 0 must choose successor first");
+
+    HibbardBst deep_predecessor(DeletionPolicy::RandomPredecessorOrSuccessor, 3);
+    add_keys(deep_predecessor, {10, 5, 7, 6, 20});
+    require(deep_predecessor.erase(10), "deep predecessor erase failed");
+    expect_keys(deep_predecessor, {5, 6, 7, 20});
+    require(deep_predecessor.metrics().height == 2, "seed 3 must choose predecessor first");
+
+    HibbardBst immediate_predecessor(DeletionPolicy::RandomPredecessorOrSuccessor, 3);
+    add_keys(immediate_predecessor, {10, 5, 3, 20});
+    require(immediate_predecessor.erase(10), "immediate predecessor erase failed");
+    expect_keys(immediate_predecessor, {3, 5, 20});
+    require(immediate_predecessor.metrics().height == 1,
+            "immediate predecessor splice failed");
+}
 int main() {
     try {
         test_insert_and_lookup();
         test_successor_deletion();
         test_order_and_bounds();
+        test_metrics();
+        test_replacement_policies();
         std::cout << "Structure A focused checks passed\n";
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
