@@ -1,0 +1,5 @@
+# Local build products and Python caches.
+*.exe
+*.o
+__pycache__/
+*.pyc

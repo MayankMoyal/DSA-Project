@@ -1,4 +1,5 @@
 #include "baseline.h"
+#include "cli.h"
 #include "degradation.h"
 #include "insertions.h"
 #include "validate.h"
@@ -29,6 +30,13 @@ template<class Generator> void check(const std::string& mode) {
 }
 int main() {
     try {
+        require(adversary::unsignedArgument("18446744073709551615", "pairs") ==
+                    std::numeric_limits<std::uint64_t>::max(),
+                "full-width pair count rejected");
+        require(adversary::populationArgument("1000000") == 1000000,
+                "maximum population rejected");
+        require(adversary::populationArgument("0001") == 1,
+                "leading-zero population rejected");
         adversary::Random zero(0);
         require(zero.next() == UINT64_C(0xe220a8397b1dcdaf), "SplitMix64 golden value mismatch");
         check<adversary::Baseline>("random");
