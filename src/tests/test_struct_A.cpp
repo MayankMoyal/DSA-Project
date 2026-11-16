@@ -3,6 +3,8 @@
 #include <initializer_list>
 #include <iostream>
 #include <stdexcept>
+#include <limits>
+#include <vector>
 
 using churn::HibbardBst;
 using Key = HibbardBst::Key;
@@ -56,10 +58,29 @@ void test_successor_deletion() {
     require(root.erase(10) && root.contains(5), "one-child root splice failed");
     require(root.erase(5) && root.size() == 0, "singleton root erase failed");
 }
+void expect_keys(const HibbardBst& tree, std::initializer_list<Key> keys) {
+    require(tree.validate(), "BST order or size invariant failed");
+    require(tree.size() == keys.size(), "reported size differs");
+    require(tree.inorder() == std::vector<Key>(keys), "inorder keys differ");
+}
+
+void test_order_and_bounds() {
+    HibbardBst tree;
+    expect_keys(tree, {});
+
+    const Key low = std::numeric_limits<Key>::min();
+    const Key high = std::numeric_limits<Key>::max();
+    add_keys(tree, {0, high, low, -1, 1});
+    expect_keys(tree, {low, -1, 0, 1, high});
+
+    require(tree.erase(0), "interior key erase failed");
+    expect_keys(tree, {low, -1, 1, high});
+}
 int main() {
     try {
         test_insert_and_lookup();
         test_successor_deletion();
+        test_order_and_bounds();
         std::cout << "Structure A focused checks passed\n";
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';

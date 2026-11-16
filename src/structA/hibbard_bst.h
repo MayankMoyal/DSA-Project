@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 #include <cstddef>
 
 namespace churn {
@@ -7,7 +7,8 @@ namespace churn {
 class HibbardBst {
 public:
     using Key = long long;
-
+    std::vector<Key> inorder() const;
+    bool validate() const;
     HibbardBst() = default;
     ~HibbardBst() noexcept;
 
