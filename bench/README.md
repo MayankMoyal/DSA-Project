@@ -38,6 +38,6 @@ This is **not** the full Project 3 experiment: it does not perform insertion/del
 4. Benchmark both Hibbard deletion policies and both Scapegoat rebuild implementations, reporting repeated-run spread, average depth, rebuild frequency, counters, and cache profiling when claiming cache effects.
 5. Save raw CSV with seeds under `results/`, create figures and document prediction-versus-measurement gaps in `REPORT.md`.
 
-## AI/tool disclosure
+## Before collecting results
 
 Compile and run the baseline before collecting results. No performance results are claimed here.
