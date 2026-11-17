@@ -2,6 +2,26 @@
 
 Run these commands from the repository root in PowerShell. You need Python 3 and a C++17 compiler available as `python` and `g++`.
 
+## Combined project checks
+
+```powershell
+python scripts/run_all.py --tests-only
+```
+
+This builds the project with CMake and runs the CTest suites, including the
+simulator CSV regression tests. The simulator tests exercise all four
+workloads, shared trace hashes at each checkpoint, setup and final samples,
+and rejected arguments. The sorted-array and million-operation differential
+checks are enabled when the Oracle sources are present.
+
+Run `python scripts/run_all.py` for the tests, the three full-scale simulator
+replays, the adversary checks and the available benchmarks.
+
+After building, run just the simulator tests with
+`python tests/test_churn_simulator.py`. The script uses the simulator in
+`.build/bin/` by default. Pass the executable path as the first argument
+to test a binary you compiled separately.
+
 ## Structure tests
 
 Build and run each suite separately. Run an executable only after its compilation succeeds, so an old executable cannot hide a build failure.

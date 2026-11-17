@@ -1,0 +1,4 @@
+/.build/
+/results/raw/run-*/
+/results/figures/run-*/
+__pycache__/
