@@ -1,33 +1,160 @@
-# Search Trees Under Long-Running Churn
+# Project 3 · Search Trees Under Long-Running Churn
 
-## What the project does
+CS 253 / MA 253 Data Structures and Algorithms Laboratory · November 2026
 
-This project studies how search trees behave when keys are repeatedly deleted and inserted. It compares an iterative binary search tree with two Hibbard deletion policies (always use the successor or choose randomly between predecessor and successor) against a scapegoat tree with array-based and in-place Stout–Warren rebuilding. The churn experiment keeps the live set at 1,000, 2,000, or 4,000 keys and runs at least n² delete–insert pairs per size, tracking average node depth and rebuilding behavior.
+## Team and roles
 
-## Build and run on Windows
+| Member | Roll number | GitHub | Role | Module | Derivation |
+| --- | --- | --- | --- | --- | --- |
+| Avinash | 250041006 | Avinashbhadane1 | Structure A owner | `src/structA/` | D1 |
+| Krish Zinzuvadiya | 250041022 | zinzuvadiyakrish-arch | Structure B owner | `src/structB/` | D2 |
+| Mallhar Totey | 250041026 | Mallhar3923V | Architect | `app/`, `include/`, `INTERFACE.md` | D3 |
+| Sai | 250041007 | saibahiram567 | Oracle owner | `oracle/` | D4 |
+| Mayank Moyal | 250041027 | MayankMoyal | Adversary | `adversary/` | D5 |
+| Aditya | 250001005 | Aditya-2007-creator | Analyst | `bench/`, `results/` | D6 |
 
-Open Command Prompt in the repository root and use a branch that contains both tree implementations, both unit test files, the Structure A churn verifier, and `bench/bst_baseline.cpp`. Use a C++17 compiler. If you installed MSYS2 UCRT64 at the default location, run:
+## Summary
 
-```bat
-set "PATH=C:\msys64\ucrt64\bin;%PATH%"
-g++ --version
+This project measures how search-tree shape changes during repeated
+delete–insert pairs at a fixed live size. It compares an iterative Hibbard
+BST with two deletion policies and a scapegoat tree with array or in-place
+Stout–Warren rebuilding. All four strategies process the same seeded trace.
+In the seed-42 application run, the always-successor BST had the largest
+final average depth at all three project sizes.
+
+## Requirements
+
+Validated on Windows with MinGW-w64 GCC 16.1.0, CMake 4.3.3 and Python
+3.11.9. The build requires C++17, CMake 3.16 or newer, Python 3.8 or newer,
+and `g++` on PATH for the adversary checks. On Windows also put
+`mingw32-make` on PATH. The Bash wrapper uses the same Python runner.
+
+## Build
+
+From the repository root in PowerShell:
+
+```powershell
+python scripts/run_all.py --build-only
 ```
 
-Copy the next line as one CMD command. It builds each executable with GCC, runs both suites and the standalone Structure A churn verifier, and runs the existing sorted/shuffled BST baseline benchmark. Each step runs only if the preceding step succeeds.
+The build writes executables to `.build/bin/`.
 
-```bat
-g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp src/tests/test_struct_A.cpp -o "%TEMP%\churn-tests-a.exe" && "%TEMP%\churn-tests-a.exe" && g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structB src/structB/scapegoat_tree.cpp src/tests/test_struct_B.cpp -o "%TEMP%\churn-tests-b.exe" && "%TEMP%\churn-tests-b.exe" && g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp src/tests/test_struct_A_churn.cpp -o "%TEMP%\churn-verify-a.exe" && "%TEMP%\churn-verify-a.exe" && g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp bench/bst_baseline.cpp -o "%TEMP%\churn-baseline.exe" && "%TEMP%\churn-baseline.exe" > "%TEMP%\churn-baseline.csv"
+## Quick start
+
+```powershell
+& .\.build\bin\churn_simulator.exe 3 1 42 exact 1
 ```
 
-The baseline CSV is written to `%TEMP%\churn-baseline.csv`. The Structure A verifier checks 21 million pairs per policy across the three sizes. For the full four-strategy comparison, follow the [analyst build and replay guide](bench/ANALYST_GUIDE.md). The [experiment report](REPORT.md) includes the predictions, five-trial results and depth figures.
+The output contains four setup rows and four final rows. The first final row
+is:
 
-## Team roles
+```csv
+hibbard_successor,exact,3,1,42,1,2,3,1710469705799210278,0,0,0
+```
 
-| Member | Role | Responsibilities |
-| --- | --- | --- |
-| Avinash | Structure A owner | Implements and tests the iterative BST with Hibbard deletion under both policies: always use the in-order successor, or choose randomly between the predecessor and successor. Writes D1 on deletion correctness. |
-| Krish | Structure B owner | Implements and tests the scapegoat tree, including subtree rebuilding after insertions and whole-tree rebuilding after sufficient shrinkage. Implements both array-based and in-place Stout–Warren rebuilding. Writes D2 on the existence of a scapegoat. |
-| Mayank | Adversary | Designs workloads that drive the always-successor BST toward a skewed shape and trigger frequent scapegoat rebuilds. Writes D5 on the exact-fit update model and the behavior of the adversarial workloads. |
-| Mallhar | Architect | Defines the shared interface and invariants in `INTERFACE.md` and builds the churn simulator that runs the same workload across the tree variants. Writes D3 on the B-tree height bound. |
-| Aditya | Analyst | Builds the benchmark harness, records measurements and seeds, produces plots, and compares measured behavior with cost predictions. Writes D6 on the amortized cost of scapegoat rebuilding and predicted rebuild frequency. |
-| Sai | Oracle owner | Implements the sorted-array reference, differential test harness, and invariant checks. Reduces failing traces to reproducible cases. Writes D4 on the expected average depth of a BST built by random insertion. |
+## Tests
+
+```powershell
+python scripts/run_all.py --tests-only
+```
+
+CTest runs the focused structure suites, the standalone Structure A churn
+verifier and the simulator CSV regression tests. When the Oracle module is
+present, it also runs the invariant and sorted-array fixtures, the one-million
+operation differential test with seed `20261117`, and the replay fixture.
+A passing run ends with `100% tests passed`. See [TESTING.md](TESTING.md)
+for individual commands and the adversary checks.
+
+## Evaluation interface
+
+```text
+churn_simulator <n> <pairs> <seed> [random|exact|shallow_exact|shallow_fresh] [sample_every]
+```
+
+All arguments are positional. Sizes range from 1 through 1,000,000. The
+pair count and seed are unsigned 64-bit decimals. Zero pairs samples
+initialization only. The default workload is `random`. The default interval
+is `max(1, floor(pairs/100))`.
+
+The application reads its arguments and prints CSV to stdout. Rows are grouped
+by checkpoint, with the same strategy order as the result table below. The CSV
+header is:
+
+```csv
+strategy,workload,n,pairs_done,seed,average_depth,height,live_size,trace_hash,rebuild_events,nodes_rebuilt,stout_warren_rotations
+```
+
+A valid run exits with code 0. An invalid configuration or failed audit exits
+with a nonzero code and writes a diagnostic to stderr. See
+[INTERFACE.md](INTERFACE.md) for the contract.
+
+## Benchmarks and figures
+The [analyst guide](bench/ANALYST_GUIDE.md) gives the Windows CMD commands to
+reproduce the five-trial churn study. The [analyst report](REPORT.md) compares
+the predicted rebuild frequencies with measurements at 1,000, 2,000, and
+4,000 live keys. The [raw data, summaries, and figures](results/analyst/)
+are available for review.
+
+One command builds, runs tests and reproduces the experiments available in the
+checkout:
+
+```powershell
+python scripts/run_all.py
+```
+
+On Linux, use `bash scripts/run_all.sh`. Append `--quick` for
+a 10,000-pair simulator run and a short Analyst run when its source is present.
+
+The full command runs the baseline, seeded simulator runs of 1, 4 and 16
+million pairs per strategy, and the adversary reproduction checks and
+insertion experiments. With the Analyst module present, it also runs the
+five-trial churn study and writes its depth plots. Fresh CSVs and figures go
+under timestamped directories in `results/raw/` and `results/figures/`.
+The simulator runs take tens of seconds on the verified Windows machine.
+Allow additional time for compilation and the five-trial study.
+
+## Repository map
+
+| Path | Contents |
+| --- | --- |
+| `app/` | Fixed-population simulator |
+| `include/` | Common C++ tree adapter |
+| `src/` | Tree implementations and focused suites |
+| `tests/` | Simulator CLI and CSV regression tests |
+| `oracle/` | Sorted-array oracle and differential runner, supplied by the Oracle branch |
+| `adversary/` | Workload generators, validation tools and recorded adversarial evidence |
+| `bench/` | BST baseline and the Analyst's benchmark integration point |
+| `scripts/` | One-command build, test and experiment runner |
+| `docs/` | Derivation sources and PDFs |
+| `results/` | Output location for fresh raw CSVs and figures |
+
+## Results at a glance
+
+Final average node depth in edges for one seeded application run
+(`random`, seed 42). Each row ran n² pairs per strategy.
+
+| Live keys | Hibbard successor | Hibbard randomized | Scapegoat array | Scapegoat Stout–Warren |
+| ---: | ---: | ---: | ---: | ---: |
+| 1,000 | 15.010 | 9.688 | 11.185 | 11.518 |
+| 2,000 | 17.643 | 10.328 | 12.311 | 11.769 |
+| 4,000 | 22.919 | 12.449 | 16.419 | 15.831 |
+
+The [adversarial results](adversary/RESULTS.md) cover the separate workload
+study. The Analyst branch supplies the comparative report and repeated timing
+measurements.
+
+## Known limitations
+
+The Oracle and Analyst contributions live on their respective branches in
+the current checkout. The runner announces their availability and enables
+their entry points when their sources are present. The team name and remaining
+role-table identifiers need confirmation before submission. The command
+above describes the simulator CLI. The instructor's separate hidden-test I/O
+specification has yet to be confirmed.
+
+## Tools and references
+
+- [Tool disclosure](TOOLS.md)
+- [D3 · B-tree height bound](docs/derivations/D3_250041026.pdf)
+- [D5 · Adversarial schedules and cited papers](docs/derivations/D5.md)
+- [Bayer and McCreight · Organization and Maintenance of Large Ordered Indices](https://doi.org/10.1007/BF00288683)
