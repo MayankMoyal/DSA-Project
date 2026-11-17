@@ -1,102 +1,66 @@
+# Tree interface and invariants
 
-# Tree Interface and Invariants
+Project 3 · Search Trees Under Long-Running Churn · Architect: Mallhar Totey
 
-## Project 3: Search Trees Under Long-Running Churn
+## Set operations
 
-**Owner:** Architect  
-**Status:** Initial interface proposal; pending integration with structure owners.
+Both trees store unique signed 64-bit keys (`long long` on supported builds).
+The interface below defines their common behavior. [The C++ adapter](include/tree_adapter.h)
+normalizes insertion, measurement, ordered traversal and validation for the simulator.
 
-## 1. Objective
+| Operation | Contract | Hibbard BST | Scapegoat tree |
+| --- | --- | --- | --- |
+| Insert | Add a key only if absent and report whether size increased | `insert(key)` | `insert(key)` returns void. The adapter checks the size change. |
+| Erase | Remove a key only if present and return whether it was removed | `erase(key)` | `erase(key)` |
+| Find | Return whether a key is present | `contains(key)` | `contains(key)` |
+| Size | Return the current live-key count | `size()` | `size()` |
+| Depth and height | Return mean node depth and maximum node depth in edges | `metrics()` | `depthStats()` |
+| Ordered keys | Return the live keys in strictly increasing order | `inorder()` | `toVector()` |
+| Validate | Verify the structure's ordering, count and applicable balance bookkeeping | `validate()` | `checkInvariants()` |
 
-The application compares the effect of long-running insertion and deletion churn on:
+The root has depth zero. Average depth is the sum of depths divided by the
+node count. The empty tree reports average depth zero and height −1.
 
-- Structure A: Hibbard Binary Search Tree
-- Structure B: Scapegoat Tree
+## Structural invariants
 
-Both structures must execute equivalent operation sequences so that their average node depths can be compared fairly.
+- Every left descendant is strictly smaller than its ancestor and every
+  right descendant is strictly greater. All live keys are reachable from
+  the root and their count equals `size()`.
+- Structure A performs iterative BST updates and supports always-successor
+  or randomized predecessor/successor replacement on two-child deletions.
+- Structure B uses α = 0.7 in the simulator. A sufficiently deep insertion
+  causes an ancestor subtree to be rebuilt. A deletion that drops the
+  size below α times the recorded maximum triggers a whole-tree rebuild.
+  Between rebuilds, the height bound uses that recorded maximum. A local
+  α-weight imbalance can exist between rebuilds. Both rebuild methods
+  preserve ordering and the live set.
 
-## 2. Proposed Common Operations
+## Churn simulator contract
 
-| Operation | Description |
-|---|---|
-| `insert(key)` | Insert a key if absent |
-| `erase(key)` | Delete a key if present |
-| `contains(key)` | Check whether a key exists |
-| `size()` | Return the number of keys |
-| `averageDepth()` | Return the average depth of all nodes |
+The [adversary contract](adversary/CONTRACT.md) defines the deterministic
+initial insertion order, the four workload generators and the FNV-1a trace
+hash. For each pair, delete a live key, then insert a key absent after
+deletion. This permits reinserting the same key in exact-fit workloads.
 
-Proposed operation semantics:
+The simulator generates each pair once and applies it to all four trees.
+The randomized deletion policy owns a separate RNG initialized from the
+recorded seed. The simulator checks success and population after each update,
+and compares each ordered traversal and structure check against the expected
+live set at each checkpoint. Its membership flags use the finite generator
+domain `[0, 16n)` and are separate from the studied trees. The standalone
+sorted-array oracle audits the general signed-key interface when its module is
+present.
 
-- Keys are signed 64-bit integers.
-- Duplicate keys are not stored.
-- `insert` returns true only when a new key is inserted.
-- `erase` returns true only when an existing key is removed.
-- `contains` returns true only if the key exists.
-- Root depth is defined as zero.
-- Average depth is the sum of all node depths divided by the number of nodes.
-- Average depth of an empty tree is defined as zero for application reporting.
+The CSV samples pair zero, every requested interval and the final pair.
+The trace hash includes setup and all updates through that checkpoint. All
+four strategies share a hash for a given checkpoint. Depth and rebuild counts
+depend on the strategy. Cumulative rebuild counters exclude initialization.
 
-These are target semantics. Existing structure implementations may require adapters or interface updates.
+| Live keys | Minimum churn pairs per strategy |
+| ---: | ---: |
+| 1,000 | 1,000,000 |
+| 2,000 | 4,000,000 |
+| 4,000 | 16,000,000 |
 
-## 3. Structural Invariants
-
-### Common BST Invariants
-
-1. Every key in a node's left subtree is smaller than its key.
-2. Every key in a node's right subtree is larger than its key.
-3. The reported size equals the actual number of nodes.
-4. An inorder traversal produces keys in strictly increasing order.
-
-### Structure A
-
-- Uses iterative BST operations.
-- Supports always-successor Hibbard deletion.
-- Supports randomized predecessor/successor deletion.
-- Does not automatically rebalance the tree.
-
-### Structure B
-
-- Uses Scapegoat Tree balancing.
-- Rebuilds an unbalanced ancestor after sufficiently deep insertion.
-- Rebuilds the whole tree after sufficient deletion-driven shrinkage.
-- Supports both array-based and Stout-Warren rebuilding.
-
-## 4. Churn Simulator Contract
-
-The simulator maintains a fixed tree size `n`.
-
-For each churn pair:
-
-1. Select a key currently present and delete it.
-2. Select a key currently absent and insert it.
-3. Verify that the final size is `n`.
-4. Record average node depth at predetermined checkpoints.
-
-Both tree structures must receive the same initial key set and equivalent operation sequence.
-
-Random workloads must use recorded seeds so experiments are reproducible.
-
-## 5. Required Experiments
-
-| n | Minimum churn pairs |
-|---|---|
-| 1000 | 1,000,000 |
-| 2000 | 4,000,000 |
-| 4000 | 16,000,000 |
-
-The results must allow comparison of:
-
-- Always-successor Hibbard deletion
-- Randomized predecessor/successor Hibbard deletion
-- Scapegoat Tree with array rebuilding
-- Scapegoat Tree with Stout-Warren rebuilding
-
-The benchmark module will plot average depth against churn pairs, including logarithmic and square-root reference curves.
-
-## 6. Integration Notes
-
-The current implementations do not yet expose identical APIs.
-
-Structure owners must agree on common insertion, deletion, and measurement semantics before integration.
-
-The architect owns the application in `app/` and coordinates this interface with the structure, oracle, adversary, and benchmark owners.
+Use the Analyst's timed benchmark for operation latency. The application
+performs validation and CSV reporting as part of its run.

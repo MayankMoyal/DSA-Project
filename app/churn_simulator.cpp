@@ -1,19 +1,16 @@
 // Project 3 - Search trees under long-running churn
 // Architect's application: reproducible fixed-size churn replay and depth samples.
-// Build from the repository root. See command in the accompanying response.
+// Build and run from the repository root. See README.md.
 
-#include "src/structA/hibbard_bst.h"
-#include "src/structB/scapegoat_tree.h"
+#include "include/tree_adapter.h"
 #include "adversary/baseline.h"
 #include "adversary/degradation.h"
 
 #include <algorithm>
 #include <cstdint>
-#include <cstdlib>
 #include <exception>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -21,53 +18,7 @@
 
 namespace {
 
-using Key = long long;
-
-struct Snapshot {
-    std::size_t count;
-    long long height;
-    double average_depth;
-    long long rebuild_events;
-    long long nodes_rebuilt;
-    long long rotations;
-};
-
-Snapshot inspect(const churn::HibbardBst& tree) {
-    const auto m = tree.metrics();
-    return {m.size, static_cast<long long>(m.height), m.average_depth(), 0, 0, 0};
-}
-
-Snapshot inspect(const ScapegoatTree& tree) {
-    const auto depth = tree.depthStats();
-    const auto& rebuild = tree.getRebuildStats();
-    return {static_cast<std::size_t>(depth.count), depth.height, depth.average(),
-            rebuild.scapegoat_rebuilds + rebuild.whole_tree_rebuilds,
-            rebuild.nodes_rebuilt, rebuild.stout_warren_rotations};
-}
-
-bool correct_shape(const churn::HibbardBst& tree) { return tree.validate(); }
-bool correct_shape(const ScapegoatTree& tree) { return tree.checkInvariants(); }
-
-// Exclude initialization rebuilds from churn-only counters.
-void begin_churn(churn::HibbardBst&) {}
-void begin_churn(ScapegoatTree& tree) { tree.resetRebuildStats(); }
-
-std::vector<Key> keys_in_order(const churn::HibbardBst& tree) {
-    return tree.inorder();
-}
-std::vector<Key> keys_in_order(const ScapegoatTree& tree) {
-    return tree.toVector();
-}
-
-bool add_key(churn::HibbardBst& tree, Key key) {
-    return tree.insert(key);
-}
-bool add_key(ScapegoatTree& tree, Key key) {
-    // ScapegoatTree::insert returns void; check the precondition explicitly.
-    if (tree.contains(key)) return false;
-    tree.insert(key);
-    return true;
-}
+using churn::Key;
 
 class Generator {
 public:
@@ -103,77 +54,106 @@ std::uint64_t parse_number(const char* value, const char* name) {
     return static_cast<std::uint64_t>(result);
 }
 
-void verify_live_set(const std::vector<unsigned char>& live,
-                     const std::vector<Key>& actual,
-                     std::size_t n, const std::string& name,
-                     std::uint64_t completed) {
-    std::vector<Key> expected;
-    expected.reserve(n);
-    for (std::size_t k = 0; k < live.size(); ++k)
-        if (live[k]) expected.push_back(static_cast<Key>(k));
-    if (expected.size() != n || actual != expected)
-        throw std::logic_error(name + ": wrong live-key set at pair " +
-                               std::to_string(completed));
+class Strategies {
+public:
+    explicit Strategies(std::uint64_t seed)
+        : randomized_(churn::DeletionPolicy::RandomPredecessorOrSuccessor, seed) {}
+
+    template <typename Action>
+    void each(Action action) {
+        action(successor_, "hibbard_successor");
+        action(randomized_, "hibbard_randomized");
+        action(array_, "scapegoat_array");
+        action(stout_warren_, "scapegoat_stout_warren");
+    }
+
+private:
+    churn::HibbardBst successor_;
+    churn::HibbardBst randomized_;
+    ScapegoatTree array_{0.7, ARRAY_REBUILD};
+    ScapegoatTree stout_warren_{0.7, STOUT_WARREN_REBUILD};
+};
+
+[[noreturn]] void replay_error(const char* strategy, const char* message,
+                               std::uint64_t completed) {
+    throw std::logic_error(std::string(strategy) + ": " + message + " at pair " +
+                           std::to_string(completed));
 }
 
-template <typename Tree>
-std::uint64_t run_strategy(Tree& tree, const std::string& name,
-                           int n, std::uint64_t pairs, std::uint64_t seed,
-                           const std::string& mode, std::uint64_t sample_every) {
-    const auto initial = adversary::initialKeys(n, seed);
-    Generator generator(n, seed, mode); // Recreated with the SAME seed for each tree.
-    std::vector<unsigned char> live(static_cast<std::size_t>(adversary::universeSize(n)), 0);
+void simulate(Generator& generator, int n, std::uint64_t pairs, std::uint64_t seed,
+              const std::string& mode, std::uint64_t sample_every) {
+    const auto population = static_cast<std::size_t>(n);
+    const auto universe = adversary::universeSize(n);
+    std::vector<unsigned char> live(universe, 0);
     adversary::TraceHash trace_hash;
+    Strategies strategies(seed);
 
-    for (Key key : initial) {
-        if (key < 0 || static_cast<std::size_t>(key) >= live.size() ||
-            live[static_cast<std::size_t>(key)] || !add_key(tree, key))
-            throw std::logic_error(name + ": failed to build initial tree");
-        live[static_cast<std::size_t>(key)] = 1;
+    for (Key key : adversary::initialKeys(n, seed)) {
+        if (key < 0 || key >= universe || live[key])
+            replay_error("generator", "invalid setup key", 0);
+        strategies.each([&](auto& tree, const char* name) {
+            if (!churn::add_key(tree, key))
+                replay_error(name, "setup insertion failed", 0);
+        });
+        live[key] = 1;
         trace_hash.add('I', key);
     }
+    strategies.each([](auto& tree, const char*) { churn::begin_churn(tree); });
 
+    std::cout << "strategy,workload,n,pairs_done,seed,average_depth,height,live_size,"
+                 "trace_hash,rebuild_events,nodes_rebuilt,stout_warren_rotations\n"
+              << std::setprecision(12);
     auto sample = [&](std::uint64_t completed) {
-        const Snapshot s = inspect(tree);
-        if (s.count != static_cast<std::size_t>(n) ||
-            static_cast<std::size_t>(tree.size()) != static_cast<std::size_t>(n) ||
-            !correct_shape(tree))
-            throw std::logic_error(name + ": tree invariant/size failure at pair " +
-                                   std::to_string(completed));
-        verify_live_set(live, keys_in_order(tree), static_cast<std::size_t>(n), name, completed);
-        std::cout << name << ',' << mode << ',' << n << ',' << completed
-                  << ',' << seed << ',' << std::setprecision(12) << s.average_depth
-                  << ',' << s.height << ',' << s.count << ',' << trace_hash.get()
-                  << ',' << s.rebuild_events << ',' << s.nodes_rebuilt
-                  << ',' << s.rotations << '\n';
+        std::vector<Key> expected;
+        expected.reserve(population);
+        for (int key = 0; key < universe; ++key) {
+            if (live[key]) expected.push_back(key);
+        }
+        if (expected.size() != population)
+            replay_error("generator", "invalid live population", completed);
+
+        strategies.each([&](const auto& tree, const char* name) {
+            const auto stats = churn::inspect(tree);
+            if (stats.count != population || static_cast<std::size_t>(tree.size()) != population ||
+                !churn::correct_shape(tree) || churn::keys_in_order(tree) != expected)
+                replay_error(name, "tree invariant or live-key set mismatch", completed);
+
+            std::cout << name << ',' << mode << ',' << n << ',' << completed << ','
+                      << seed << ',' << stats.average_depth << ',' << stats.height << ','
+                      << stats.count << ',' << trace_hash.get() << ',' << stats.rebuild_events
+                      << ',' << stats.nodes_rebuilt << ',' << stats.rotations << '\n';
+        });
+        if (!std::cout) throw std::runtime_error("could not write CSV");
     };
 
-    begin_churn(tree);
     sample(0);
-    for (std::uint64_t i = 1; i <= pairs; ++i) {
-        const adversary::Pair p = generator.next();
-        if (p.removed < 0 || p.inserted < 0 ||
-            static_cast<std::size_t>(p.removed) >= live.size() ||
-            static_cast<std::size_t>(p.inserted) >= live.size() ||
-            !live[static_cast<std::size_t>(p.removed)])
-            throw std::logic_error(name + ": invalid generated deletion at pair " + std::to_string(i));
+    std::uint64_t completed = 0;
+    while (completed < pairs) {
+        const auto pair = generator.next();
+        const auto removed = pair.removed;
+        const auto inserted = pair.inserted;
+        ++completed;
+        if (removed < 0 || removed >= universe || !live[removed])
+            replay_error("generator", "deletion must name a live key", completed);
+        if (inserted < 0 || inserted >= universe || (inserted != removed && live[inserted]))
+            replay_error("generator", "insertion must name an absent key after deletion", completed);
 
-        if (!tree.erase(p.removed))
-            throw std::logic_error(name + ": deletion failed at pair " + std::to_string(i));
-        live[static_cast<std::size_t>(p.removed)] = 0;
-        trace_hash.add('D', p.removed);
+        strategies.each([&](auto& tree, const char* name) {
+            if (!tree.erase(removed) || static_cast<std::size_t>(tree.size()) != population - 1)
+                replay_error(name, "deletion failed or changed size incorrectly", completed);
+            if (!churn::add_key(tree, inserted) || static_cast<std::size_t>(tree.size()) != population)
+                replay_error(name, "insertion failed or changed size incorrectly", completed);
+        });
 
-        if (live[static_cast<std::size_t>(p.inserted)] || !add_key(tree, p.inserted))
-            throw std::logic_error(name + ": duplicate/failed insertion at pair " + std::to_string(i));
-        live[static_cast<std::size_t>(p.inserted)] = 1;
-        trace_hash.add('I', p.inserted);
-
-        if (static_cast<std::size_t>(tree.size()) != static_cast<std::size_t>(n))
-            throw std::logic_error(name + ": size changed at pair " + std::to_string(i));
-
-        if (i % sample_every == 0 || i == pairs) sample(i);
+        live[removed] = 0;
+        live[inserted] = 1;
+        trace_hash.add('D', removed);
+        trace_hash.add('I', inserted);
+        if (completed % sample_every == 0 || completed == pairs) sample(completed);
     }
-    return trace_hash.get();
+
+    std::cout.flush();
+    if (!std::cout) throw std::runtime_error("could not write CSV");
 }
 
 void print_usage(const char* program) {
@@ -203,31 +183,8 @@ int main(int argc, char** argv) {
             : std::max<std::uint64_t>(1, pairs / 100);
         if (every == 0) throw std::invalid_argument("sample_every must be positive");
 
-        std::cout << "strategy,workload,n,pairs_done,seed,average_depth,height,live_size,"
-                     "trace_hash,rebuild_events,nodes_rebuilt,stout_warren_rotations\n";
-        std::uint64_t expected_hash = 0;
-        bool first = true;
-        auto confirm = [&](std::uint64_t hash) {
-            if (first) { expected_hash = hash; first = false; }
-            else if (hash != expected_hash)
-                throw std::logic_error("different operation traces across strategies");
-        };
-        {
-            churn::HibbardBst tree(churn::DeletionPolicy::AlwaysSuccessor, seed);
-            confirm(run_strategy(tree, "hibbard_successor", n, pairs, seed, mode, every));
-        }
-        {
-            churn::HibbardBst tree(churn::DeletionPolicy::RandomPredecessorOrSuccessor, seed);
-            confirm(run_strategy(tree, "hibbard_randomized", n, pairs, seed, mode, every));
-        }
-        {
-            ScapegoatTree tree(0.7, ARRAY_REBUILD);
-            confirm(run_strategy(tree, "scapegoat_array", n, pairs, seed, mode, every));
-        }
-        {
-            ScapegoatTree tree(0.7, STOUT_WARREN_REBUILD);
-            confirm(run_strategy(tree, "scapegoat_stout_warren", n, pairs, seed, mode, every));
-        }
+        Generator generator(n, seed, mode);
+        simulate(generator, n, pairs, seed, mode, every);
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "Churn simulator error: " << error.what() << '\n';
