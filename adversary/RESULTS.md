@@ -99,24 +99,24 @@ The source hashes and CSV SHA-256 values are checked by the reference audit. Gen
 
 ## Figures
 
-![random-depth](results/figures/random-depth.png)
+![random-depth](../results/figures/adversary/random-depth.png)
 
-![exact-depth](results/figures/exact-depth.png)
+![exact-depth](../results/figures/adversary/exact-depth.png)
 
-![shallow_exact-depth](results/figures/shallow_exact-depth.png)
+![shallow_exact-depth](../results/figures/adversary/shallow_exact-depth.png)
 
-![shallow_fresh-depth](results/figures/shallow_fresh-depth.png)
+![shallow_fresh-depth](../results/figures/adversary/shallow_fresh-depth.png)
 
-![random-scaling](results/figures/random-scaling.png)
+![random-scaling](../results/figures/adversary/random-scaling.png)
 
-![exact-scaling](results/figures/exact-scaling.png)
+![exact-scaling](../results/figures/adversary/exact-scaling.png)
 
-![shallow_exact-scaling](results/figures/shallow_exact-scaling.png)
+![shallow_exact-scaling](../results/figures/adversary/shallow_exact-scaling.png)
 
-![shallow_fresh-scaling](results/figures/shallow_fresh-scaling.png)
+![shallow_fresh-scaling](../results/figures/adversary/shallow_fresh-scaling.png)
 
-![insertions-upstream](results/figures/insertions-upstream.png)
+![insertions-upstream](../results/figures/adversary/insertions-upstream.png)
 
-![insertions-reference](results/figures/insertions-reference.png)
+![insertions-reference](../results/figures/adversary/insertions-reference.png)
 
 Compatibility review (16 November 2026): `mayank/adversary` at `df8e899` passed integration checks against `main` at `6633c5c`. The earlier Structure A duplicate-definition issue was fixed in `1a59bb1`. Current APIs include `metrics().average_depth()`, `inorder()` and `validate()`. The published timing data still describes the recorded reference snapshot, not a new performance study of main.

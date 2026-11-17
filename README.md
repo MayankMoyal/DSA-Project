@@ -1,52 +1,59 @@
 # Project 3 · Search Trees Under Long-Running Churn
 
-CS 253 / MA 253 Data Structures and Algorithms Laboratory · November 2026
+**Team: Underqualified** · CS 253 / MA 253 · November 2026
 
 ## Team and roles
 
 | Member | Roll number | GitHub | Role | Module | Derivation |
 | --- | --- | --- | --- | --- | --- |
-| Avinash | 250041006 | Avinashbhadane1 | Structure A owner | `src/structA/` | D1 |
-| Krish Zinzuvadiya | 250041022 | zinzuvadiyakrish-arch | Structure B owner | `src/structB/` | D2 |
-| Mallhar Totey | 250041026 | Mallhar3923V | Architect | `app/`, `include/`, `INTERFACE.md` | D3 |
-| Sai | 250041007 | saibahiram567 | Oracle owner | `oracle/` | D4 |
-| Mayank Moyal | 250041027 | MayankMoyal | Adversary | `adversary/` | D5 |
-| Aditya | 250001005 | Aditya-2007-creator | Analyst | `bench/`, `results/` | D6 |
+| Avinash Bhadane | 250041006 | Avinashbhadane1 | Structure A | `src/structA/` | [D1](docs/derivations/D1_250041006.pdf) |
+| Krish Zinzuvadiya | 250041022 | zinzuvadiyakrish-arch | Structure B | `src/structB/` | [D2](docs/derivations/D2_250041022.pdf) |
+| Mallhar Totey | 250041026 | Mallhar3923V | Architect | `app/`, `include/` | [D3](docs/derivations/D3_250041026.pdf) |
+| Sai | 250041007 | saibahiram567 | Oracle | `oracle/` | [D4](docs/derivations/D4_250041007.pdf) |
+| Mayank Moyal | 250041027 | MayankMoyal | Adversary | `adversary/` | [D5](docs/derivations/D5_250041027.pdf) |
+| Aditya | 250001005 | Aditya-2007-creator | Analyst | `bench/`, `results/` | [D6](docs/derivations/D6_250001005.pdf) |
 
 ## Summary
 
-This project measures how search-tree shape changes during repeated
-delete–insert pairs at a fixed live size. It compares an iterative Hibbard
-BST with two deletion policies and a scapegoat tree with array or in-place
-Stout–Warren rebuilding. All four strategies process the same seeded trace.
-In the seed-42 application run, the always-successor BST had the largest
-final average depth at all three project sizes.
+The application measures search-tree shape during repeated delete-insert pairs
+at a fixed population. It compares iterative Hibbard deletion using the successor
+or a random replacement side against scapegoat trees using array or Stout-Warren
+rebuilding. All four strategies consume identical seeded inputs. In the recorded
+five-trial ordinary-churn study, the always-successor BST had the largest mean
+final depth at all three tested sizes; this finite experiment is not an
+asymptotic proof.
 
 ## Requirements
 
-Validated on Windows with MinGW-w64 GCC 16.1.0, CMake 4.3.3 and Python
-3.11.9. The build requires C++17, CMake 3.16 or newer, Python 3.8 or newer,
-and `g++` on PATH for the adversary checks. On Windows also put
-`mingw32-make` on PATH. The Bash wrapper uses the same Python runner.
+- C++17 compiler, CMake 3.16 or newer, and Python 3.8 or newer.
+- Windows: GCC/MinGW-w64 (`g++` and `mingw32-make` on PATH). Linux: GCC and Make.
+- Python plotting/export packages: `python -m pip install -r scripts/requirements.txt`.
+- Development checks used Windows 11, GCC 16.2.0 and Python 3.11. Recorded timing
+  studies used different stated machines/compilers; see [REPORT.md](REPORT.md).
+- Standard library containers support generators, traversals and the oracle;
+  they do not replace either studied tree.
 
 ## Build
 
-From the repository root in PowerShell:
+From the repository root:
 
 ```powershell
 python scripts/run_all.py --build-only
 ```
 
-The build writes executables to `.build/bin/`.
+Executables go under `.build/bin/`. CMake must be installed and available on PATH.
+Generated executables and debug files are excluded from Git.
 
 ## Quick start
+
+In PowerShell:
 
 ```powershell
 & .\.build\bin\churn_simulator.exe 3 1 42 exact 1
 ```
 
-The output contains four setup rows and four final rows. The first final row
-is:
+On Linux use `./.build/bin/churn_simulator 3 1 42 exact 1`. The CSV has a header,
+four setup rows and four final rows. Its first final row is:
 
 ```csv
 hibbard_successor,exact,3,1,42,1,2,3,1710469705799210278,0,0,0
@@ -58,24 +65,22 @@ hibbard_successor,exact,3,1,42,1,2,3,1710469705799210278,0,0,0
 python scripts/run_all.py --tests-only
 ```
 
-CTest runs the focused structure suites, the standalone Structure A churn
-verifier and the simulator CSV regression tests. It also runs the Oracle
-invariant and sorted-array fixtures, the exhaustive D4 check, the one-million
-operation differential test with seed `20261117`, and the replay fixture.
-A passing run ends with `100% tests passed`. See [TESTING.md](TESTING.md)
-for individual commands and the adversary checks.
+This builds and runs the structure suites, Structure A's full-scale churn
+verifier, simulator CSV checks, sorted-array/invariant fixtures, exhaustive D4
+cases, one million differential operations with seed `20261117`, and replay.
+A successful CTest run prints `100% tests passed` and exits zero.
 
-## Oracle verification on Windows
+For the additional Oracle full-scale campaigns and disposable-fault demo, use CMD:
 
-Sai's C++17 sorted-array oracle checks both Hibbard deletion policies and both
-scapegoat rebuild modes. From CMD in the repository root, run
-`oracle\run.cmd full` for the focused tests, D4 check, one million mixed
-operations and all three n²-pair churn campaigns. Run `oracle\fault-demo.cmd`
-to demonstrate failure minimisation.
+```bat
+oracle\run.cmd full
+oracle\fault-demo.cmd
+```
 
-[Oracle usage and trace format](oracle/README.md) ·
-[Verification evidence](oracle/VERIFICATION.md) ·
-[Sai's D4 derivation](docs/derivations/D4.pdf)
+The full Oracle command checks 1, 4 and 16 million churn pairs at n=1000, 2000,
+4000 with workload seed 42; randomized deletion uses policy seed 253. The fault
+demo expects a deliberate size failure and reduces it to `I 17`, `D 17`.
+See [TESTING.md](TESTING.md) and [oracle/README.md](oracle/README.md).
 
 ## Evaluation interface
 
@@ -83,89 +88,92 @@ to demonstrate failure minimisation.
 churn_simulator <n> <pairs> <seed> [random|exact|shallow_exact|shallow_fresh] [sample_every]
 ```
 
-All arguments are positional. Sizes range from 1 through 1,000,000. The
-pair count and seed are unsigned 64-bit decimals. Zero pairs samples
-initialization only. The default workload is `random`. The default interval
-is `max(1, floor(pairs/100))`.
-
-The application reads its arguments and prints CSV to stdout. Rows are grouped
-by checkpoint, with the same strategy order as the result table below. The CSV
-header is:
+Arguments are positional; n is 1..1,000,000, and pairs/seed are unsigned 64-bit
+decimals. Zero pairs emits initialization only. Defaults are `random` and
+`max(1, floor(pairs/100))`. Input is CLI arguments; output is stdout CSV:
 
 ```csv
 strategy,workload,n,pairs_done,seed,average_depth,height,live_size,trace_hash,rebuild_events,nodes_rebuilt,stout_warren_rotations
 ```
 
-A valid run exits with code 0. An invalid configuration or failed audit exits
-with a nonzero code and writes a diagnostic to stderr. See
-[INTERFACE.md](INTERFACE.md) for the contract.
+Root depth is zero. Rows are grouped by checkpoint, with four strategies per
+checkpoint. A valid run exits 0; invalid inputs or failed audits exit nonzero
+and report to stderr. The quick-start command is a complete small example.
+[INTERFACE.md](INTERFACE.md) defines the contract. A separate instructor-provided
+hidden-test interface has not been confirmed; this is the implemented interface.
 
 ## Benchmarks and figures
-The [analyst guide](bench/ANALYST_GUIDE.md) gives the Windows CMD commands to
-reproduce the five-trial churn study. The [analyst report](REPORT.md) compares
-the predicted rebuild frequencies with measurements at 1,000, 2,000, and
-4,000 live keys. The [raw data, summaries, and figures](results/analyst/)
-are available for review.
-
-One command builds, runs tests and reproduces the experiments available in the
-checkout:
 
 ```powershell
 python scripts/run_all.py
 ```
 
-On Linux, use `bash scripts/run_all.sh`. Append `--quick` for
-a 10,000-pair simulator run and a short Analyst run when its source is present.
+Linux equivalent: `bash scripts/run_all.sh`. The command builds, tests, runs the
+baseline and n²-pair simulator campaigns, verifies the adversary generators,
+runs 15 insertion experiments and the five-trial analyst study, and regenerates
+recorded figures. Allow several minutes or longer depending on hardware; the
+full analyst study alone replays 105 million pairs across four strategies.
 
-The full command runs the baseline, seeded simulator runs of 1, 4 and 16
-million pairs per strategy, and the adversary reproduction checks and
-insertion experiments. With the Analyst module present, it also runs the
-five-trial churn study and writes its depth plots. Fresh CSVs and figures go
-under timestamped directories in `results/raw/` and `results/figures/`.
-The simulator runs take tens of seconds on the verified Windows machine.
-Allow additional time for compilation and the five-trial study.
+Use `--quick` for a short experiment run. To regenerate all recorded figures
+from their CSVs without compiling or measuring:
+
+```powershell
+python scripts/run_all.py --figures-only
+```
+
+Recorded logs live in `results/raw/`, summaries in `results/summary/`, and plots
+in `results/figures/`. New experiments use timestamped `run-*` folders, preserving
+submitted measurements. [results/README.md](results/README.md) explains provenance
+and historical reference limitations. Plot generation uses `scripts/plot_results.py`.
+Export the matching report PDF with `python scripts/export_report.py`.
 
 ## Repository map
 
 | Path | Contents |
 | --- | --- |
+| `src/structA/`, `src/structB/` | Studied trees; existing focused tests in `src/tests/` |
+| `include/` | Shared adapter |
 | `app/` | Fixed-population simulator |
-| `include/` | Common C++ tree adapter |
-| `src/` | Tree implementations and focused suites |
-| `tests/` | Simulator CLI and CSV regression tests |
-| `oracle/` | Sorted-array oracle, differential runner and failure reducer |
-| `adversary/` | Workload generators, validation tools and recorded adversarial evidence |
-| `bench/` | BST baseline and the Analyst's benchmark integration point |
-| `scripts/` | One-command build, test and experiment runner |
-| `docs/` | Derivation sources and PDFs |
-| `results/` | Output location for fresh raw CSVs and figures |
+| `oracle/` | Sorted-array reference, differential tests and reducer |
+| `adversary/` | Input generators, trace validation and workload explanations |
+| `bench/` | Benchmark harness and cost predictions |
+| `tests/` | Application regression and repository-layout checks |
+| `scripts/` | Build/test/experiment runner, plot and report exporters |
+| `results/` | Raw CSVs, summaries, generated figures and measurement metadata |
+| `docs/derivations/` | D1-D6 sources and `D<number>_<roll>.pdf` deliverables |
+| `docs/slides/` | Reserved for the team's final `slides.pdf` |
+| Root documents | README, interface, report and tool records |
 
 ## Results at a glance
 
-Final average node depth in edges for one seeded application run
-(`random`, seed 42). Each row ran n² pairs per strategy.
+Recorded ordinary random churn, five trials per size, n² pairs per trial.
+Mean final node depth in edges (rounded):
 
-| Live keys | Hibbard successor | Hibbard randomized | Scapegoat array | Scapegoat Stout–Warren |
+| Live keys | Hibbard successor | Hibbard randomized | Scapegoat array | Scapegoat DSW |
 | ---: | ---: | ---: | ---: | ---: |
-| 1,000 | 15.010 | 9.688 | 11.185 | 11.518 |
-| 2,000 | 17.643 | 10.328 | 12.311 | 11.769 |
-| 4,000 | 22.919 | 12.449 | 16.419 | 15.831 |
+| 1,000 | 13.84 | 9.63 | 11.36 | 11.49 |
+| 2,000 | 17.83 | 10.95 | 13.17 | 12.79 |
+| 4,000 | 23.98 | 12.87 | 14.48 | 14.44 |
 
-The [adversarial results](adversary/RESULTS.md) cover the separate workload
-study. The Analyst branch supplies the comparative report and repeated timing
-measurements.
+The [report](REPORT.md) and [summary CSV](results/summary/analyst/random-summary.csv)
+include sample SD, timings, rebuild rates, measurement setup and limitations.
+Targeted reference experiments are reported separately in
+[adversary/RESULTS.md](adversary/RESULTS.md).
 
 ## Known limitations
 
-The Oracle and Analyst contributions are integrated in this checkout.
-The team name and role-table identifiers need confirmation before submission.
-The command above describes the simulator CLI. The instructor's separate hidden-test I/O
-specification has yet to be confirmed.
+- The final slides, final release tag and instructor submission are pending.
+- Derivation PDFs retain their authors' content; several still need length and
+  authorship details checked against the final one-to-two-page requirement.
+- Historical reference churn timings require a separate recorded implementation
+  to rerun. All stored plots can be regenerated from the included CSVs.
+- No usable hardware cache profile is claimed. The instructor's hidden-test I/O
+  contract and each teammate's final tool records still need confirmation.
+- See [docs/SUBMISSION_CHECKLIST.md](docs/SUBMISSION_CHECKLIST.md) before release.
 
 ## Tools and references
 
-- [Tool disclosure](TOOLS.md)
-- [D3 · B-tree height bound](docs/derivations/D3_250041026.pdf)
-- [D4 · Expected average depth after random BST insertion](docs/derivations/D4.pdf)
-- [D5 · Adversarial schedules and cited papers](docs/derivations/D5.md)
-- [Bayer and McCreight · Organization and Maintenance of Large Ordered Indices](https://doi.org/10.1007/BF00288683)
+See [TOOLS.md](TOOLS.md), [TOOLS_ARCHITECT.md](TOOLS_ARCHITECT.md), the per-module
+records, and [REPORT.md](REPORT.md) section 13. Key sources are Hibbard (1962),
+Eppinger (1983), Culberson and Munro (1990), Galperin and Rivest (1993),
+Stout and Warren (1986), and Bayer and McCreight (1972).

@@ -74,8 +74,13 @@ def main():
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument("--build-only", action="store_true")
     actions.add_argument("--tests-only", action="store_true")
+    actions.add_argument("--figures-only", action="store_true", help="Regenerate recorded figures without building or measuring.")
     actions.add_argument("--quick", action="store_true", help="Use a smaller churn demonstration.")
     args = parser.parse_args()
+
+    if args.figures_only:
+        run(sys.executable, ROOT / "scripts/plot_results.py")
+        return
 
     build()
     if args.build_only:
@@ -83,6 +88,7 @@ def main():
     run("ctest", "--output-on-failure", cwd=BUILD)
     if not args.tests_only:
         experiments(args.quick)
+        run(sys.executable, ROOT / "scripts/plot_results.py")
 
 
 if __name__ == "__main__":

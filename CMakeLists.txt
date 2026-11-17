@@ -43,6 +43,8 @@ endif()
 
 if(BUILD_TESTING)
     find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME repository_layout COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/tests/test_repository_layout.py")
     checked_test(structure_a src/tests/test_struct_A.cpp)
     checked_test(structure_b src/tests/test_struct_B.cpp)
     checked_test(structure_a_churn src/tests/test_struct_A_churn.cpp)

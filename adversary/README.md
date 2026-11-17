@@ -53,7 +53,7 @@ The standalone verification checks 200000 generated pairs, all insertion permuta
 
 ## Results and limits
 
-Measured data, summaries, plots, source hashes and machine/compiler details are under adversary/results/ in the delivered contribution. D5 is under docs/derivations/. RESULTS.md explains the findings and differentiates unchanged teammate Scapegoat measurements from reference perfect-leaves measurements. Full churn measurements use the general-folder reference Structure A extension because the measured base snapshot of teammate A has no erase/depth methods. That extension and all other roles' drafts intentionally remain outside this contribution.
+Recorded CSVs are in `results/raw/adversary/`, summaries in `results/summary/adversary/`, plots in `results/figures/adversary/`, and original manifests and machine details in `results/metadata/adversary/` (all paths relative to the repository root). D5 is under docs/derivations/. RESULTS.md explains the findings and differentiates unchanged teammate Scapegoat measurements from reference perfect-leaves measurements. Full churn measurements use the general-folder reference Structure A extension because the measured base snapshot of teammate A has no erase/depth methods. That extension and all other roles' drafts intentionally remain outside this contribution.
 
 To regenerate the complete reference experiment when that separate directory is available:
 

@@ -8,7 +8,7 @@ The dataset audit passed all 90 raw files: 60 churn runs and 30 insertion runs. 
 
 All eight rendered pages of D1-D6 and all ten figures were visually inspected. The PDF verifier initially rejected a line-wrapped authorship label; whitespace normalization corrected that verifier issue, and the affected check passed afterward. Other derivations and implementations remain clearly labeled reference drafts for their owners' review.
 
-These records describe the original measured snapshot; later wording edits do not replace its source hashes. See results/validation-manifest.json, evidence-audit.json, pdf-verification.json and pdf-visual-review.json for recorded evidence. This is tested evidence, not exhaustive correctness or hidden-test certification. No cache claims or globally optimal adversarial schedules are asserted.
+These records describe the original measured snapshot; later wording edits do not replace its source hashes. See the original validation-manifest.json, evidence-audit.json, pdf-verification.json and pdf-visual-review.json under `results/metadata/adversary/` at the repository root for recorded evidence. This is tested evidence, not exhaustive correctness or hidden-test certification. No cache claims or globally optimal adversarial schedules are asserted.
 
 Only adversary files and D5 are included in this contribution. Full churn timing uses the separate reference project. PR review, final integration, the tagged release, presentation and viva remain part of the team submission.
 

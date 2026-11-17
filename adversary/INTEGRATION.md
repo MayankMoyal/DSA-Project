@@ -1,6 +1,6 @@
 # Integration support for teammates
 
-This contribution contains adversary/ and docs/derivations/D5.md and D5.pdf. The generators use the existing tree APIs.
+This contribution contains adversary/ and docs/derivations/D5.md and D5_250041027.pdf. The generators use the existing tree APIs.
 
 Generators are header-based and can be consumed directly by the architect's C++ simulator. `initialKeys(n, seed)` returns the initial insertion order. `Baseline(n, seed, "random"|"exact")` and `Degradation(n, seed, "shallow_exact"|"shallow_fresh")` each expose `next()` returning {removed, inserted}. `insertionKeys` returns a unique insertion permutation.
 

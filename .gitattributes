@@ -1,1 +1,9 @@
 scripts/*.sh text eol=lf
+
+*.pdf binary
+*.png binary
+results/raw/** -text
+results/summary/** -text
+results/metadata/adversary/** -text
+results/raw/** whitespace=cr-at-eol
+results/summary/** whitespace=cr-at-eol
