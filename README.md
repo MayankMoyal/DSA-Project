@@ -59,11 +59,23 @@ python scripts/run_all.py --tests-only
 ```
 
 CTest runs the focused structure suites, the standalone Structure A churn
-verifier and the simulator CSV regression tests. When the Oracle module is
-present, it also runs the invariant and sorted-array fixtures, the one-million
+verifier and the simulator CSV regression tests. It also runs the Oracle
+invariant and sorted-array fixtures, the exhaustive D4 check, the one-million
 operation differential test with seed `20261117`, and the replay fixture.
 A passing run ends with `100% tests passed`. See [TESTING.md](TESTING.md)
 for individual commands and the adversary checks.
+
+## Oracle verification on Windows
+
+Sai's C++17 sorted-array oracle checks both Hibbard deletion policies and both
+scapegoat rebuild modes. From CMD in the repository root, run
+`oracle\run.cmd full` for the focused tests, D4 check, one million mixed
+operations and all three n²-pair churn campaigns. Run `oracle\fault-demo.cmd`
+to demonstrate failure minimisation.
+
+[Oracle usage and trace format](oracle/README.md) ·
+[Verification evidence](oracle/VERIFICATION.md) ·
+[Sai's D4 derivation](docs/derivations/D4.pdf)
 
 ## Evaluation interface
 
@@ -121,7 +133,7 @@ Allow additional time for compilation and the five-trial study.
 | `include/` | Common C++ tree adapter |
 | `src/` | Tree implementations and focused suites |
 | `tests/` | Simulator CLI and CSV regression tests |
-| `oracle/` | Sorted-array oracle and differential runner, supplied by the Oracle branch |
+| `oracle/` | Sorted-array oracle, differential runner and failure reducer |
 | `adversary/` | Workload generators, validation tools and recorded adversarial evidence |
 | `bench/` | BST baseline and the Analyst's benchmark integration point |
 | `scripts/` | One-command build, test and experiment runner |
@@ -145,16 +157,15 @@ measurements.
 
 ## Known limitations
 
-The Oracle and Analyst contributions live on their respective branches in
-the current checkout. The runner announces their availability and enables
-their entry points when their sources are present. The team name and remaining
-role-table identifiers need confirmation before submission. The command
-above describes the simulator CLI. The instructor's separate hidden-test I/O
+The Oracle and Analyst contributions are integrated in this checkout.
+The team name and role-table identifiers need confirmation before submission.
+The command above describes the simulator CLI. The instructor's separate hidden-test I/O
 specification has yet to be confirmed.
 
 ## Tools and references
 
 - [Tool disclosure](TOOLS.md)
 - [D3 · B-tree height bound](docs/derivations/D3_250041026.pdf)
+- [D4 · Expected average depth after random BST insertion](docs/derivations/D4.pdf)
 - [D5 · Adversarial schedules and cited papers](docs/derivations/D5.md)
 - [Bayer and McCreight · Organization and Maintenance of Large Ordered Indices](https://doi.org/10.1007/BF00288683)

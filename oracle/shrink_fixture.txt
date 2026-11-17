@@ -1,0 +1,10 @@
+# A legal input on healthy trees. For the demo, a disposable B build skips
+# the size decrement on a successful deletion of key 17.
+I 40
+I 17
+C 40
+I 90
+D 33
+C -7
+I 22
+D 17
