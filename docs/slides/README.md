@@ -1,16 +1,17 @@
 # Presentation
 
-The 12-slide presentation is available as `slides.pdf` and `slides.pptx`.
-The PowerPoint contains editable text, tables and tree diagrams, with the
-recorded report plots embedded as images. Speaker notes contain derivation
-details and source references. The PDF preserves the rendered slide appearance.
+The current presentation contains 12 slides, with no live-demo slide or demo speaking section.
 
-Slides 2–7 cover each member's module and D1–D6 derivation. The remaining slides
-cover measured churn, timing, insertion stress, limitations and demo commands.
-Historical reference results remain labelled separately from integrated results.
+- `slides.pptx`: editable text, tables and tree diagrams, with recorded plots.
+- `slides.pdf`: rendered slide appearance.
+- `PRESENTATION_SCRIPT.md`: current speaking script and allocation.
 
-Prepared with OpenAI Codex assistance on 17 November 2026 from the project source,
-report, derivations, recorded CSV summaries and the two course guideline PDFs.
-The team should review the content and rehearse before committing the final tag.
-The handout states both 15 minutes per team and 3–4 minutes per member; confirm
-the timing allocation with the instructor because six such segments exceed 15 minutes.
+Avinash presents slides 3–4 for 3:00, including the D1 proof.
+Krish presents slides 5–6 for 3:30, including the step-by-step D2 proof.
+Mallhar presents slides 1–2 for 1:35, Sai slide 7 for 1:40, Mayank slide 8 for
+1:50, and Aditya slides 9–11 for 2:40. Total target: 14:15.
+
+Prepared with OpenAI Codex assistance from the project source, derivations,
+report, course guidelines and recorded measurements. Sources appear in slide notes.
+
+Slide 12 is the closing Thank You slide.
