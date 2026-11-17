@@ -32,3 +32,12 @@ DynamoRIO was tried on Windows. The tracer failed to produce usable cache counte
 - The cost model and rebuild-frequency prediction are in [D6](docs/derivations/D6.md).
 - The measured results and their interpretation are in [the report](REPORT.md).
 - The adversary module has its own [tools record](adversary/TOOLS.md).
+# Build and verification tools
+
+The project uses a C++17 compiler for the tree implementations, generators and
+benchmarks, and Python 3 for verification and experiment orchestration.
+
+See [TESTING.md](TESTING.md) for test commands and
+[adversary/TOOLS.md](adversary/TOOLS.md) for the adversary module's build,
+measurement and document-generation tools. Recorded experiment evidence is
+under `adversary/results/`.

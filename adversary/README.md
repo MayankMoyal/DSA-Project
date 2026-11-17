@@ -4,6 +4,8 @@ This module generates reproducible input traces. It does not replace either team
 
 ## Build and use
 
+See [TESTING.md](../TESTING.md) for the structure test commands, expected success messages, adversary checks and baseline CSV location.
+
 From the repository root with g++ supporting C++17:
 
 ```powershell
@@ -19,6 +21,10 @@ python adversary/verify.py
 ```
 
 PowerShell 7 redirection preserves these ASCII traces. For older Windows PowerShell, use `| Set-Content -Encoding ascii path.trace` to avoid UTF-16 output. CLI arguments are n, number of churn pairs, workload seed and mode; insertion-only arguments are n, seed and pattern. Positive n is required; a zero-pair trace contains only setup. The validator takes n and pair count explicitly rather than trusting comments.
+
+Numeric generator and validator arguments accept decimal digits only, including
+leading zeroes. Signs, whitespace, suffixes and overflow fail before trace output.
+See [CONTRACT.md](CONTRACT.md) for population, pair-count and seed limits.
 
 ## Workloads
 
