@@ -4,6 +4,8 @@ This module generates reproducible input traces. It does not replace either team
 
 ## Build and use
 
+See [TESTING.md](../TESTING.md) for the structure test commands, expected success messages, adversary checks and baseline CSV location.
+
 From the repository root with g++ supporting C++17:
 
 ```powershell
