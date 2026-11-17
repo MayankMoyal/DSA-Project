@@ -9,12 +9,16 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser(description='Verify the adversary module and optionally rerun the separate reference project.')
     parser.add_argument('--reference-root',type=Path)
+    parser.add_argument('--project-root',type=Path,default=ROOT,help='Complete team checkout containing src/structB')
     args=parser.parse_args()
     subprocess.run([sys.executable,str(ROOT/'adversary/verify.py')],check=True)
+    structure=args.project_root.resolve()/'src/structB'
+    if not (structure/'scapegoat_tree.cpp').is_file():
+        parser.error('Insertion measurements require --project-root pointing to the complete team checkout. Standalone verification has passed.')
     work=ROOT/'adversary/.work'
     exe=work/'measure_rebuilds.exe'
     subprocess.run(['g++','-std=c++17','-O2','-Wall','-Wextra','-Wpedantic',
-                    '-I'+str(ROOT/'src/structB'),str(ROOT/'src/structB/scapegoat_tree.cpp'),
+                    '-I'+str(structure),str(structure/'scapegoat_tree.cpp'),
                     str(ROOT/'adversary/measure_rebuilds.cpp'),'-o',str(exe)],check=True)
     raw=[]
     for n in [1000,2000,4000]:

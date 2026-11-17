@@ -4,7 +4,7 @@ This module generates reproducible input traces. It does not replace either team
 
 ## Build and use
 
-See [TESTING.md](../TESTING.md) for the structure test commands, expected success messages, adversary checks and baseline CSV location.
+See [TESTING.md](../TESTING.md) for standalone adversary verification and optional integration measurements.
 
 From the repository root with g++ supporting C++17:
 
@@ -44,10 +44,10 @@ g++ -std=c++17 -O2 adversary/validate_trace.cpp -o validate_trace.exe
 .\validate_trace.exe 1000 1000000 attack.trace
 g++ -std=c++17 -O2 -Isrc/structB src/structB/scapegoat_tree.cpp adversary/measure_rebuilds.cpp -o measure_rebuilds.exe
 .\measure_rebuilds.exe 4000 1 202735161 0.7
-python adversary/reproduce.py
+python adversary/reproduce.py --project-root "path/to/complete-team-checkout"
 ```
 
-The measurement command tests all five insertion patterns with both current teammate rebuild modes. Keep each CSV; use at least five trials before reporting mean timing and spread. Rebuild frequency is event count divided by successful insertions. Report rebuilt nodes and rotations separately. Insertion-only timing includes building the tested tree because that is the experiment; churn timing excludes initialization.
+The direct g++ measurement command requires a complete team checkout with src/structB. On this contribution-only branch use reproduce.py with --project-root. The measurement command tests all five insertion patterns with both current teammate rebuild modes. Keep each CSV; use at least five trials before reporting mean timing and spread. Rebuild frequency is event count divided by successful insertions. Report rebuilt nodes and rotations separately. Insertion-only timing includes building the tested tree because that is the experiment; churn timing excludes initialization.
 
 The standalone verification checks 200000 generated pairs, all insertion permutations, deterministic streams, invalid inputs, boundary-key validation, CLI round trips and malformed traces. The separate integrated reference project additionally passed one million seeded operations with a sorted-array oracle and invariant/depth audits after every operation, and tested failure shrinking. The generator tests cover input validity; the integrated differential harness checks the trees.
 
@@ -58,7 +58,7 @@ Recorded CSVs are in `results/raw/adversary/`, summaries in `results/summary/adv
 To regenerate the complete reference experiment when that separate directory is available:
 
 ```powershell
-python adversary/reproduce.py --reference-root "C:/Users/Mayank Moyal/Desktop/dsa/reference-project"
+python adversary/reproduce.py --project-root "path/to/complete-team-checkout" --reference-root "C:/Users/Mayank Moyal/Desktop/dsa/reference-project"
 ```
 
 No tested schedule is claimed globally optimal. The exact-fit square-root theorem does not prove an ordinary-churn bound or a bound for biased deletion. Cache behavior has not been profiled and is not claimed. Timings are unpinned wall-clock block measurements and can vary with scheduling and background load.
