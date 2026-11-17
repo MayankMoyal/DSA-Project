@@ -4,7 +4,7 @@ Avinash and Krish have expanded segments, with a separate proof slide each. Time
 
 | Person | Slides | Part | Rehearsal budget |
 | --- | --- | --- | --- |
-| Mallhar | 1–2, 12 | Problem, interface, D3 and demo narration | 1:40 + demo |
+| Mallhar | 1–2 | Problem, interface and D3 | 1:40 |
 | Avinash | 3–4 | Hibbard design and D1 proof | 2:30 |
 | Krish | 5–6 | Scapegoat design and D2 proof | 3:00 |
 | Sai | 7 | Oracle design and D4 | 1:20 |
@@ -15,7 +15,7 @@ Prepared explanation budgets total 12 minutes, leaving 3 minutes for demo and ha
 
 **Unresolved brief conflict:** six individual segments of 3–4 minutes require 18–24 minutes before demo time. No allocation can simultaneously meet that requirement and the 15-minute team limit. Confirm which timing rule the instructor intends. For the longer interpretation, rehearse each member's proof and module explanation for at least 3 minutes, plus separately timed demo.
 
-Order: Mallhar → Avinash → Krish → Sai → Mayank → Aditya → Mallhar.
+Order: Mallhar → Avinash → Krish → Sai → Mayank → Aditya (including the closing Thank You).
 The following scripts are full rehearsal wording; shorten spoken transitions to meet an agreed allocation without skipping proof steps.
 
 Read the quoted text aloud. Bracketed text gives actions. Pause between proof steps so the audience can follow the equations.
@@ -164,19 +164,11 @@ Our results show that deletion policy affects depth. Random replacement helps in
 
 Our conclusion is that a tree can preserve its contents while its shape becomes expensive to search. The replacement and rebuilding policies determine how it responds to churn.”
 
-## Slide 12 — Full-scale demonstration and closing
+## Slide 12 — Thank You
 
-[Aditya hands over to Mallhar. Perform this demonstration only once an approved `final` tag exists. It was absent at the last check. Clone into a fresh directory and show the tagged commit identity.]
+[Aditya advances to the closing slide after the conclusion.]
 
-“We are using a fresh clone of the final release. We build it using the documented command, then run all four configurations at one thousand, two thousand and four thousand keys, for one, four and sixteen million pairs respectively.
-
-[Run the PowerShell commands on slide 12. Show the final checkpoint at each size.]
-
-The trace hashes match across the four configurations, live population returns to n at pair boundaries, and the last checkpoint reaches n squared pairs. Average depth and rebuild counters describe how the strategies behave on the same input.
-
-Each member can now answer questions about their implementation and derivation. Thank you.”
-
-This is a demonstration script, not a claim that a fresh tagged full-scale run has already occurred. Stored plots cannot replace the required live run.
+“Thank you for your time and attention.”
 
 ## Rehearsal notes
 

@@ -2,8 +2,8 @@
 
 The revised 12-slide deck covers the problem statement, interface and invariants,
 both structure diagrams, six named modules and derivations, adversarial inputs,
-predicted versus measured costs, and a full-scale tagged-release demonstration plan.
-Slide 12 combines demo instructions and Thank You.
+predicted versus measured costs, and a closing Thank You slide.
+Slide 12 contains a Thank You heading and appreciation note on a white background matching the other slides.
 
 - slides.pptx: editable presentation with recorded plot images and source notes.
 - slides.pdf: rendered presentation.
