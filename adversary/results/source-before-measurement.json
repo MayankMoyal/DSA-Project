@@ -1,0 +1,23 @@
+{
+  "adversary\\baseline.h": "7ea0078df0dcec19c76c2d31c7c857633b49dc9e7e882cc62aada2fcad0b2b4b",
+  "adversary\\core.h": "5f4fa97c83fe8b58b73bbd98ec4009aba01ecc0e75ce4c9b844d6b6d28ed945f",
+  "adversary\\degradation.h": "fc3f7ee7e92ab322dfb4c07cf8f7391d1ea61bde8ff8b16e56f6fd1f5c46f9da",
+  "adversary\\foundation.cpp": "b3d16ec85a0a56589b3e9ad4677c57153c78889143cf1b4d787d252e54b8c8eb",
+  "adversary\\generate_baseline.cpp": "67809f57f1b4c4d5da4efc54604d4b8dc15e6740f4ee0a315174e86e2e1529c5",
+  "adversary\\generate_degradation.cpp": "531d971c632621c675f4624e7caaa7bffc6ccf9d4268825e0ea5eec9a66e3c8e",
+  "adversary\\generate_insertions.cpp": "145c082eb854556c74865caed4ff7d5d5e3827cc22121658866b17bc81ea03fc",
+  "adversary\\insertions.h": "9b41d3bdf68960e4f4e9f7f5be00f830da73f1dc3595c2b13755142ad819028d",
+  "adversary\\measure_rebuilds.cpp": "c1849d117de1e178fe476a753a22c97e45fbbfe44e1e2966ab2aa2cebdb9c0f4",
+  "adversary\\tests.cpp": "83cbe1a386ff417053a5d6783a1b726f4df9e6dceaede05ed807205702df7658",
+  "adversary\\validate.h": "c61ca2431000d7b8b0baca070bd56b49d3ea835e13182111c5407ffe66c57483",
+  "src\\structA\\hibbard_bst.cpp": "7579e78a56f20adeb4902ddd0d4a5efec44d2dacda17fe9c72c0becde641f821",
+  "src\\structA\\hibbard_bst.h": "238de7a7f587475c8b33c65672d0dce2cd5512226ebf4350982afdeb71f4ad3f",
+  "src\\structB\\scapegoat_tree.cpp": "7bc731e5fb6935f9df80129f07ec78238a9d61d23384943ac5415164a7286e3e",
+  "src\\structB\\scapegoat_tree.h": "0734e63233f6d6b758c74655b6c05764910d8b8d3081358ebb23ba49d6792aba",
+  "app\\churn_simulator.cpp": "0fd4968f565f56b6112512c244a7b124f1ec683ca1afac9652d85a4b06f6da05",
+  "app\\simulator.h": "722ea17672f694f3d1de7123b270d7b332238be7be39fc653e3e2ec1e8da7376",
+  "oracle\\shrink.h": "f4f5c604a02430f93fd9b42ed81efd0736a90e68c5f9ddf9584c7b1434ba8724",
+  "oracle\\sorted_array.h": "d8772046dbddd4d631fd87ec02faf08606b4c656e2324c5cbfb321dfce788a1e",
+  "bench\\churn_bench.cpp": "f3fd9f75ecd0b91727f4af113551f2274387d689c8d0593aebc1bf60bbcee4c4",
+  "bench\\PREDICTIONS.md": "1ea00f9f1400520ce32262f9ee9c29f01d7725fc4dd8e0b989703461d4fb03eb"
+}

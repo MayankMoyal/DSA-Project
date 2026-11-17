@@ -1,0 +1,9 @@
+{
+  "status": "pass",
+  "churn_runs": 60,
+  "insertion_runs": 30,
+  "generated_pairs": 420000000,
+  "strategy_pair_replays": 1680000000,
+  "audited_raw_files": 90,
+  "scope": "coverage, trace agreement, run counts and file/source integrity; not exhaustive correctness"
+}

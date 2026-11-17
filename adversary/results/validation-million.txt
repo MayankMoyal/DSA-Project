@@ -1,0 +1,1 @@
+Reference checks passed: 1000000 seeded differential operations across four strategies; seed=20261116; audits after every operation; shrinking fixture=2 operations
