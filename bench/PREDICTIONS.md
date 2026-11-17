@@ -25,4 +25,4 @@
 
 The repository's `adversary/RESULTS.md` measured a **separate reference project**, partly different from current `main`. Those values provide a comparison point, not proof that this Analyst executable on current `main` produces identical results. No experiments reported in this document have been run yet.
 
-For ordinary random churn, the D6 random-insertion reference model predicts local events per pair of 2.73%, 2.42% and 2.14% at the three ascending sizes. See bench/predict_rate.py and the D6 addendum.
+For ordinary random churn, the D6 random-insertion reference model predicts local events per pair of 2.73%, 2.42% and 2.14% at the three ascending sizes. See bench/predict_rate.cpp and the D6 addendum.
