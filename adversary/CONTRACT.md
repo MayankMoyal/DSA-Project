@@ -2,7 +2,9 @@
 
 Maintainer: Mayank Moyal.
 
-All generators are C++17 and independent of the two structures. Keys use signed 64-bit `long long`, checked at compile time. Generated domains are [0,16n), with n in [1,1000000]. External replay tests also exercise LLONG_MIN and LLONG_MAX. Population and domain validation reject invalid n. Decimal CLI arguments should be valid nonnegative integers; n is positive.
+All generators are C++17 and independent of the two structures. Keys use signed 64-bit `long long`, checked at compile time. Generated domains are [0,16n), with n in [1,1000000]. External replay tests also exercise LLONG_MIN and LLONG_MAX. Population and domain validation reject invalid n.
+
+The generator and trace-validator CLI arguments `n`, `pairs` and `seed` must contain decimal digits only. Signs, whitespace, fractional values, trailing characters and uint64 overflow are rejected before trace output. Leading zeroes are allowed. Population is restricted to [1,1000000]; pair counts and seeds accept [0,18446744073709551615]. A zero-pair trace contains setup only. This rule does not change the separate measurement driver's `trial` and floating-point `alpha` arguments.
 
 `core.h` specifies SplitMix64, rejection sampling for unbiased bounded integers and Fisher-Yates shuffling. Its arithmetic is explicitly unsigned. It does not depend on implementation-specific std::shuffle or distribution mappings. Seeds, algorithm version and parameters reproduce the same initial order and operation stream across C++17 platforms with 64-bit unsigned integers.
 

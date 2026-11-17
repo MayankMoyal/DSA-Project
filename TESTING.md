@@ -23,10 +23,14 @@ Build and run each suite separately. Run an executable only after its compilatio
 
 ```powershell
 g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp src/tests/test_struct_A.cpp -o "$env:TEMP\dsa-tests-a.exe"
+if ($LASTEXITCODE -ne 0) { throw "Structure A build failed" }
 & "$env:TEMP\dsa-tests-a.exe"
+if ($LASTEXITCODE -ne 0) { throw "Structure A tests failed" }
 
 g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structB src/structB/scapegoat_tree.cpp src/tests/test_struct_B.cpp -o "$env:TEMP\dsa-tests-b.exe"
+if ($LASTEXITCODE -ne 0) { throw "Structure B build failed" }
 & "$env:TEMP\dsa-tests-b.exe"
+if ($LASTEXITCODE -ne 0) { throw "Structure B tests failed" }
 ```
 
 The successful runs print:
@@ -48,6 +52,7 @@ This builds the generator tests and command-line tools, checks reproducibility a
 
 ```text
 Adversary checks passed: 200000 generated pairs, all five insertion patterns, invalid inputs and boundary keys
+Strict numeric CLI checks passed: malformed values, population bounds, leading zeroes, zero pairs and full-width seeds
 Standalone generator, CLI, replay validation, reproducibility and malformed-trace checks passed
 Reproduced teammate-current Scapegoat insertion experiments: 15 runs
 ```
@@ -60,7 +65,9 @@ Generated executables and insertion CSVs are saved under `adversary/.work/`. Tha
 
 ```powershell
 g++ -std=c++17 -O2 -Wall -Wextra -Isrc/structA src/structA/hibbard_bst.cpp bench/bst_baseline.cpp -o "$env:TEMP\dsa-baseline.exe"
+if ($LASTEXITCODE -ne 0) { throw "Baseline build failed" }
 & "$env:TEMP\dsa-baseline.exe" | Set-Content -Encoding ascii "$env:TEMP\dsa-baseline.csv"
+if ($LASTEXITCODE -ne 0) { throw "Baseline run failed" }
 ```
 
 After a successful build and run, the CSV is at `$env:TEMP\dsa-baseline.csv`. It has this header and 30 data rows: two insertion orders, three sizes and five trials per combination.
