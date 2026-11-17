@@ -63,7 +63,7 @@ void ScapegoatTree::insert(ll key) {
     }
 }
 
-Node* ScapegoatTree::findMin(Node* v) const {
+Node* ScapegoatTree::findMin(Node* v) const {  
     while (v != nullptr && v->left != nullptr) {
         v = v->left;
     }
@@ -103,7 +103,7 @@ Node* ScapegoatTree::eraseNode(Node* v, ll key, bool& erased) {
     return v;
 }
 
-bool ScapegoatTree::erase(ll key) {
+bool ScapegoatTree::erase(ll key) {  // along with erasing the node , rebuilds if current nodes < alpha * max nodes after last rebuild
     bool erased = false;
     root = eraseNode(root, key, erased);
 
@@ -165,7 +165,7 @@ int ScapegoatTree::getMaxN() const {
     return max_n;
 }
 
-void ScapegoatTree::collectInorder(Node* v, vector<ll>& result) const {
+void ScapegoatTree::collectInorder(Node* v, vector<ll>& result) const {  
     if (v == nullptr) return;
     collectInorder(v->left, result);
     result.push_back(v->key);
@@ -179,7 +179,7 @@ vector<ll> ScapegoatTree::toVector() const {
     return result;
 }
 
-bool ScapegoatTree::checkInvariants() const {
+bool ScapegoatTree::checkInvariants() const {   // Checks if the BST is valid, number of nodes are valid , depth is less than the upper bound
     auto inspect = [&](auto&& self, Node* v, bool hasLow, ll low,
                        bool hasHigh, ll high) -> pair<bool, int> {
         if (v == nullptr) return {true, 0};
@@ -188,8 +188,10 @@ bool ScapegoatTree::checkInvariants() const {
         }
         auto left = self(self, v->left, hasLow, low, true, v->key);
         if (!left.first) return {false, 0};
+
         auto right = self(self, v->right, true, v->key, hasHigh, high);
         if (!right.first) return {false, 0};
+        
         return {true, 1 + left.second + right.second};
     };
 
@@ -234,7 +236,7 @@ double ScapegoatTree::logInvAlpha(int value) const {
     return log(static_cast<double>(value)) / log(1.0 / alpha);
 }
 
-void ScapegoatTree::rebuildAtScapegoat() {
+void ScapegoatTree::rebuildAtScapegoat() { // Traces the path of the last inserted node to find the weight unbalanced ancestor 
     if (path.size() < 2) return;
 
     int childSize = 1;
@@ -272,7 +274,7 @@ void ScapegoatTree::flatten(Node* v, vector<Node*>& nodes) {
     flatten(v->right, nodes);
 }
 
-Node* ScapegoatTree::buildBalanced(
+Node* ScapegoatTree::buildBalanced( // Rebuilding using array
     vector<Node*>& nodes, int low, int high) {
 
     if (low > high) return nullptr;
@@ -287,7 +289,7 @@ Node* ScapegoatTree::buildBalanced(
 }
 
 
-void ScapegoatTree::treeToVine(Node* pseudoRoot, int& nodeCount) {
+void ScapegoatTree::treeToVine(Node* pseudoRoot, int& nodeCount) { // Converts BST into a right skewed vine using right rotations
     Node* tail = pseudoRoot;
     Node* rest = tail->right;
 
@@ -309,7 +311,7 @@ void ScapegoatTree::treeToVine(Node* pseudoRoot, int& nodeCount) {
     }
 }
 
-void ScapegoatTree::compress(Node* pseudoRoot, int rotations) {
+void ScapegoatTree::compress(Node* pseudoRoot, int rotations) { // Performs left rotations along the right vine to reduce its length and make a more balanced tree
     Node* scanner = pseudoRoot;
 
     for (int i = 0; i < rotations; i++) {
