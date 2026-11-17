@@ -89,6 +89,11 @@ with a nonzero code and writes a diagnostic to stderr. See
 [INTERFACE.md](INTERFACE.md) for the contract.
 
 ## Benchmarks and figures
+The [analyst guide](bench/ANALYST_GUIDE.md) gives the Windows CMD commands to
+reproduce the five-trial churn study. The [analyst report](REPORT.md) compares
+the predicted rebuild frequencies with measurements at 1,000, 2,000, and
+4,000 live keys. The [raw data, summaries, and figures](results/analyst/)
+are available for review.
 
 One command builds, runs tests and reproduces the experiments available in the
 checkout:
