@@ -17,6 +17,11 @@ checks are enabled when the Oracle sources are present.
 Run `python scripts/run_all.py` for the tests, the three full-scale simulator
 replays, the adversary checks and the available benchmarks.
 
+After building, run just the simulator tests with
+`python tests/test_churn_simulator.py`. The script uses the simulator in
+`.build/bin/` by default. Pass the executable path as the first argument
+to test a binary you compiled separately.
+
 ## Structure tests
 
 Build and run each suite separately. Run an executable only after its compilation succeeds, so an old executable cannot hide a build failure.

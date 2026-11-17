@@ -2,12 +2,15 @@
 
 import csv
 import io
+from pathlib import Path
 import subprocess
 import sys
 import unittest
 
 
-EXECUTABLE = sys.argv.pop(1)
+EXECUTABLE = Path(__file__).resolve().parents[1] / ".build" / "bin" / (
+    "churn_simulator.exe" if sys.platform == "win32" else "churn_simulator"
+)
 STRATEGIES = ["hibbard_successor", "hibbard_randomized",
               "scapegoat_array", "scapegoat_stout_warren"]
 
@@ -81,4 +84,9 @@ class SimulatorTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
+        EXECUTABLE = Path(sys.argv.pop(1)).resolve()
+    if not EXECUTABLE.is_file():
+        sys.exit(f"Simulator executable not found at {EXECUTABLE}. "
+                 "Run python scripts/run_all.py --build-only or pass the executable path.")
     unittest.main()
