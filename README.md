@@ -31,3 +31,7 @@ The baseline CSV is written to `%TEMP%\churn-baseline.csv`. The Structure A veri
 | Mallhar | Architect | Defines the shared interface and invariants in `INTERFACE.md` and builds the churn simulator that runs the same workload across the tree variants. Writes D3 on the B-tree height bound. |
 | Aditya | Analyst | Builds the benchmark harness, records measurements and seeds, produces plots, and compares measured behavior with cost predictions. Writes D6 on the amortized cost of scapegoat rebuilding and predicted rebuild frequency. |
 | Sai | Oracle owner | Implements the sorted-array reference, differential test harness, and invariant checks. Reduces failing traces to reproducible cases. Writes D4 on the expected average depth of a BST built by random insertion. |
+
+## Oracle verification on Windows
+
+Sai's C++17 sorted-array oracle checks both Hibbard deletion policies and both scapegoat rebuild modes. From CMD in the repository root, run `oracle\run.cmd full` for the focused tests, D4 check, one million mixed operations and all three n²-pair churn campaigns. Run `oracle\fault-demo.cmd` to demonstrate failure minimisation. [Oracle usage and trace format](oracle/README.md) · [Verification evidence](oracle/VERIFICATION.md) · [Sai's D4 derivation](docs/derivations/D4.pdf)
