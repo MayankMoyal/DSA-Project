@@ -146,7 +146,7 @@ Export the matching report PDF with `python scripts/export_report.py`.
 
 ## Results at a glance
 
-Recorded ordinary random churn, five trials per size, n² pairs per trial.
+The table shows ordinary random churn with α = 0.7 for both scapegoat variants, five trials per size, and n² delete–insert pairs per trial. Aditya’s [α = 0.55 follow-up study](results/metadata/analyst/alpha055-random.json) is recorded separately.
 Mean final node depth in edges (rounded):
 
 | Live keys | Hibbard successor | Hibbard randomized | Scapegoat array | Scapegoat DSW |
