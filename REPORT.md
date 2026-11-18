@@ -267,7 +267,7 @@ Lines show trial means and shading shows one sample SD. The two horizontal refer
 Figure captions: the three ordinary-churn figures above show five-trial mean
 node depth with one sample SD, plus 2 ln(n) and sqrt(n) reference curves.
 Source: `results/raw/analyst/random-raw.csv`; generator:
-`python scripts/plot_results.py`. The 2 ln(n) line shows the leading term of D4’s expected average depth after random BST insertion. The sqrt(n) line shows the l
+`python scripts/plot_results.py`. The references are constant for fixed n.
 
 The reference targeted workloads are shown below. Each panel uses five trials,
 with n² pairs at the labelled size; shaded bands show one sample SD. These

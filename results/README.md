@@ -3,7 +3,6 @@
 - `raw/adversary/`: original 60 reference churn runs and 30 insertion runs;
   `interrupted/` holds the incomplete run, excluded from plots and summaries.
 - `raw/analyst/`: integrated four-strategy study, 15 trials in one checkpoint CSV.
-- The original ordinary-churn study used α = 0.7 for both scapegoat variants. The [α = 0.55 follow-up](metadata/analyst/alpha055-random.json) has its own [final-depth summary](summary/analyst/alpha055-random/final-depth-summary.csv).
 - `raw/analyst-replay/`: separately recorded rerun and its final temporary trial.
 - `raw/smoke/`: exploratory short runs, not five-trial evidence.
 - `summary/`: submitted aggregates kept with their originating study.

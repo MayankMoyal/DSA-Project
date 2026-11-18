@@ -22,6 +22,7 @@ The Linux run used MayankMoyal/DSA-Project main at `2dcde349c9d4214c03fe67d7ee06
 Each churn operation count includes n initial inserts. The mixed campaign and full campaigns use separate fresh trees. Generated stream parameters and the fixed policy seed reproduce the run. The full auditor runs on operations 1–64, at 4096-operation intervals, and after the last operation. No upstream defect was observed in these checks. The course examiner's hidden inputs are separate.
 
 Run `oracle\run.cmd full` for the main results. The exact-fit, targeted-generator and injected-fault commands are in [the Oracle guide](README.md). The Windows scripts are supplied for local execution; the recorded runs used the equivalent native compiler commands on Linux.
-## Sai’s Windows verification — 17 November 2026
+## Windows verification — 17 November 2026
 
+Verified by Bahiram Sai Chhagan (mc250041007), Oracle owner.
 All four variants passed 1,000,000 mixed operations and churn runs of 2,001,000, 8,002,000 and 32,004,000 operations per variant. The D4 results matched the formula for n = 1 through n = 8. The fault demo reduced the eight-operation failure to two steps: insert 17, then delete 17.
