@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -26,6 +27,7 @@ struct Options {
     std::string mode = "random";
     std::string strategy = "all";
     std::uint64_t checkpoint = 100;
+    double alpha = 0.7;
 };
 
 Options parseOptions(int argc, char** argv) {
@@ -36,8 +38,8 @@ Options parseOptions(int argc, char** argv) {
     if (argc == 2 && std::string(argv[1]) == "--quick") {
         return options;
     }
-    if (argc < 6 || argc > 8) {
-        throw std::invalid_argument("usage: churn_benchmark [--quick | n pairs seed trial workload [checkpoint [strategy]]]; workload = random|exact|shallow_exact|shallow_fresh");
+    if (argc < 6 || argc > 9) {
+        throw std::invalid_argument("usage: churn_benchmark [--quick | n pairs seed trial workload [checkpoint [strategy [alpha]]]]; workload = random|exact|shallow_exact|shallow_fresh");
     }
     options.n = std::stoi(argv[1]);
     options.pairs = std::stoull(argv[2]);
@@ -49,8 +51,14 @@ Options parseOptions(int argc, char** argv) {
     } else {
         options.checkpoint = static_cast<std::uint64_t>(options.n);
     }
-    if (argc == 8) {
+    if (argc >= 8) {
         options.strategy = argv[7];
+    }
+    if (argc == 9) {
+        options.alpha = std::stod(argv[8]);
+    }
+    if (!std::isfinite(options.alpha) || options.alpha <= 0.5 || options.alpha >= 1.0) {
+        throw std::invalid_argument("alpha must be strictly between 0.5 and 1.0");
     }
     if (options.strategy != "all" && options.strategy != "successor" &&
         options.strategy != "random_policy" && options.strategy != "scapegoat_array" &&
@@ -306,8 +314,8 @@ void runAllStrategies(const Options& options, const Trace& trace) {
     std::uint64_t policySeed = options.seed ^ UINT64_C(0x504f4c494359);
     churn::HibbardBst successor(churn::DeletionPolicy::AlwaysSuccessor, policySeed);
     churn::HibbardBst randomized(churn::DeletionPolicy::RandomPredecessorOrSuccessor, policySeed);
-    ScapegoatTree arrayTree(0.7, ARRAY_REBUILD);
-    ScapegoatTree dswTree(0.7, STOUT_WARREN_REBUILD);
+    ScapegoatTree arrayTree(options.alpha, ARRAY_REBUILD);
+    ScapegoatTree dswTree(options.alpha, STOUT_WARREN_REBUILD);
     MeasuredTree trees[] = {
         {"successor", &successor, nullptr, 0},
         {"random_policy", &randomized, nullptr, 0},
