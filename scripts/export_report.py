@@ -4,6 +4,8 @@ import re
 from xml.sax.saxutils import escape
 import reportlab
 import matplotlib
+import pymupdf
+from io import BytesIO
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_LEFT
@@ -20,7 +22,7 @@ styles=getSampleStyleSheet()
 for style in styles.byName.values(): style.fontName='Report'
 styles['BodyText'].fontSize=9
 styles['BodyText'].leading=14
-styles['BodyText'].spaceAfter=8
+styles['BodyText'].spaceAfter=6
 styles['Heading1'].fontName=styles['Heading2'].fontName='ReportBold'
 styles['Heading2'].spaceAfter=14
 styles.add(ParagraphStyle('Cell',fontName='Report',fontSize=7,leading=10,wordWrap='CJK'))
@@ -29,7 +31,12 @@ styles.add(ParagraphStyle('Caption',parent=styles['BodyText'],fontSize=8,leading
 
 def inline(text):
     text=escape(text)
-    text=re.sub(r'\[([^]]+)\]\(([^)]+)\)',r'\1',text)
+    def link(match):
+        label, target = match.groups()
+        if not target.startswith('https://'):
+            target = 'https://github.com/MayankMoyal/DSA-Project/blob/03f2c8c/' + target
+        return f'<link href="{target}" color="#205078">{label}</link>'
+    text=re.sub(r'\[([^]]+)\]\(([^)]+)\)',link,text)
     text=re.sub(r'`([^`]+)`',r'<font name="Report">\1</font>',text)
     text=re.sub(r'\*\*([^*]+)\*\*',r'<b>\1</b>',text)
     return text
@@ -57,10 +64,16 @@ def main():
             story.append(Paragraph(inline(line.lstrip('# ')),styles['Heading1' if level==1 else 'Heading3'])); i+=1; continue
         match=re.fullmatch(r'!\[([^]]*)\]\(([^)]+)\)',line)
         if match:
-            image=Image(str(ROOT/match[2]))
-            factor=min(510/image.imageWidth,260/image.imageHeight)
+            source = ROOT / match[2]
+            if source.suffix.lower() == '.svg':
+                with pymupdf.open(source) as vector:
+                    pixels = vector[0].get_pixmap(matrix=pymupdf.Matrix(2, 2), alpha=False)
+                    image = Image(BytesIO(pixels.tobytes("png")))
+            else:
+                image = Image(str(source))
+            factor=min(510/image.imageWidth,248/image.imageHeight)
             image.drawWidth=image.imageWidth*factor; image.drawHeight=image.imageHeight*factor
-            story.extend([image,Paragraph(inline(match[1]),styles['Caption']),Spacer(1,8)])
+            story.extend([KeepTogether([image, Paragraph(inline(match[1]), styles['Caption'])]), Spacer(1,8)])
             i+=1; continue
         if line.startswith('|'):
             rows=[]

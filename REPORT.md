@@ -1,6 +1,6 @@
 # Project 3: Search Trees Under Long-Running Churn
 
-Team Underqualified | CS 253 / MA 253 | 17 November 2026
+Team Underqualified | CS 253 / MA 253 | 21 November 2026
 
 ## 1. Team and contributions
 
@@ -9,7 +9,7 @@ Team Underqualified | CS 253 / MA 253 | 17 November 2026
 | Avinash Bhadane | 250041006 | Avinashbhadane1 | Structure A | `src/structA/` | [D1](docs/derivations/D1_250041006.pdf) |
 | Krish Zinzuvadiya | 250041022 | zinzuvadiyakrish-arch | Structure B | `src/structB/` | [D2](docs/derivations/D2_250041022.pdf) |
 | Mallhar Totey | 250041026 | Mallhar3923V | Architect | `app/`, `include/` | [D3](docs/derivations/D3_250041026.pdf) |
-| Sai | 250041007 | saibahiram567 | Oracle | `oracle/` | [D4](docs/derivations/D4_250041007.pdf) |
+| Bahiram Sai Chhagan | 250041007 | saibahiram567 | Oracle | `oracle/` | [D4](docs/derivations/D4_250041007.pdf) |
 | Mayank Moyal | 250041027 | MayankMoyal | Adversary | `adversary/` | [D5](docs/derivations/D5_250041027.pdf) |
 | Aditya | 250001005 | Aditya-2007-creator | Analyst | `bench/`, `results/` | [D6](docs/derivations/D6_250001005.pdf) |
 
@@ -37,6 +37,12 @@ The main comparison is ordinary random churn. Separate exact-fit and targeted
 schedules stress directional deletion and scapegoat rebuilding. Finite runs
 provide empirical evidence; the exact-fit theorem is not a theorem about
 ordinary fresh-key churn.
+
+### What would count as degradation?
+
+Consider a uniformly selected successful lookup. A node at depth d requires d+1 key visits, counting the root. Mean node depth therefore gives the expected number of visits minus one. A rising curve at constant population records a change in shape: the index contains just as many keys, but a typical lookup travels farther. Height measures the longest path and can respond differently to the same updates. Neither statistic includes the work needed to maintain the index.
+
+At 4,000 keys, each trial contains 16 million pairs, or 32 million individual updates per strategy. A short insertion benchmark can establish initial shape but cannot answer the churn question. We examine three quantities separately: the trajectory of mean depth, work spent rebuilding, and measured time per update. A strategy can lead on one and trail on another.
 
 ## 3. Interface and invariants
 
@@ -84,8 +90,7 @@ recorded seed. The simulator checks success and population after each update,
 and compares each ordered traversal and structure check against the expected
 live set at each checkpoint. Its membership flags use the finite generator
 domain `[0, 16n)` and are separate from the studied trees. The standalone
-sorted-array oracle audits the general signed-key interface when its module is
-present.
+sorted-array oracle audits the general signed-key interface in the integrated C++ test suite.
 
 The CSV samples pair zero, every requested interval and the final pair.
 The trace hash includes setup and all updates through that checkpoint. All
@@ -120,6 +125,12 @@ oracle. Full traversals for metrics and validation cost O(n) and are outside
 benchmark timing. [D1](docs/derivations/D1_250041006.pdf) proves deletion preserves
 order; the source is `src/structA/hibbard_bst.cpp`.
 
+### Why deletion preserves the search order (D1)
+
+For a leaf, disconnecting its parent link removes one key without moving another. For a node with one child, that child's entire subtree already satisfies the lower and upper bounds inherited from the deleted position. Splicing the child into the position preserves both bounds, including when the deleted node was the root.
+
+For a two-child example, delete 8 from a tree with left child 4, right child 12, and 10 as the left child of 12. Copy 10 into the root and remove its old occurrence. Every key in the left subtree is below 8 and hence below 10. Every remaining right key exceeds 10 because 10 was its minimum and keys are unique. The minimum has no left child, so removing it reduces to a splice. Choosing the maximum of the left subtree gives the mirror argument. Thus both policies implement the same ordered set even though repeated choices produce different shapes.
+
 ## 5. Structure B
 
 The scapegoat tree stores keys and child pointers, current size n and the
@@ -142,6 +153,12 @@ every subtree to remain alpha-balanced between rebuilds.
 [D6](docs/derivations/D6_250001005.pdf) discusses the actual rebuild variants and
 the potential argument at alpha = 0.7.
 
+### Finding the ancestor to rebuild (D2)
+
+Let v be the inserted leaf at depth d. If each child on the search path had size at most alpha times its parent's size, multiplying the inequalities would give size(v) ≤ n times alpha to the power d. For d greater than log base (1/alpha) of n, that product is below one, contradicting the presence of the leaf. The implemented test uses q ≥ n, so exceeding its threshold also implies the contradiction. Walking up the insertion path therefore finds an ancestor with an overweight child.
+
+An array rebuild stores the sorted node pointers temporarily and splits each range around a median. The vine method uses rotations: remove left links to form a sorted rightward chain, then compress that chain in passes. Both reuse the keys in sorted order. The array needs temporary storage proportional to subtree size. The in-place conversion avoids that array but spends pointer updates on rotations. The counters distinguish how often these procedures run from how many nodes they process.
+
 ## 6. The requirement beyond the lecture
 
 The implementation compares asymmetric and randomized Hibbard deletion with
@@ -149,10 +166,10 @@ both scapegoat rebuilding methods. The application streams one common trace
 through all four configurations and samples depth in edges, with root depth zero.
 
 [D5](docs/derivations/D5_250041027.pdf) explains the restricted exact-fit result:
-uniformly choose a live key, delete it and reinsert that same value. The
+uniformly choose a live key, delete it and reinsert that same value. Under long-running uniform exact-fit updates, the expected average search cost for always-successor deletion is Θ(√n). The
 published square-root expectation does not apply directly to biased deletion
 or ordinary fresh-key churn. Eppinger provides empirical motivation for the
-ordinary-churn experiment. The shallow-node generators deliberately violate
+ordinary-churn experiment. Eppinger inserted before deleting and studied alternating replacement sides. Here deletion comes first and the symmetric policy chooses a side randomly. The shallow-node generators deliberately violate
 uniform deletion by preferring shallow nodes with two children.
 
 [D3](docs/derivations/D3_250041026.pdf) covers the conceptual B-tree height bound;
@@ -160,6 +177,10 @@ this project does not implement a B-tree. The historical reference experiments
 use a perfect-leaves DSW variant and a reference Structure A extension; the
 integrated analyst measurements use the team implementations. Their labels
 must remain distinct.
+
+### A multiway index as a point of comparison (D3)
+
+In a nonempty B-tree of minimum degree t ≥ 2 and height h ≥ 1, the root has at least two children. At level i ≥ 1 there are at least 2 times t to the power (i−1) nodes, each holding at least t−1 keys. Adding the root key and summing the levels gives n ≥ 1 + 2(t to the power h − 1). Rearranging yields h ≤ log base t of ((n+1)/2). A one-node tree satisfies the same bound with h = 0. Splits, borrowing and merges preserve occupancy and equal leaf depth. Churn may change the height as population changes, but cannot produce the long one-sided chain possible in a binary search tree.
 
 ## 7. Correctness
 
@@ -224,6 +245,12 @@ and 2.14% at the three sizes. `bench/predict_rate.cpp` evaluates the external-ga
 depth recurrence. Prior rebuilding changes the shape distribution, so this is
 a reference approximation rather than a guaranteed event rate.
 
+### Paying for a rebuild (D6)
+
+For a subtree of size s let m be the size of its heavier child. At alpha = 0.7, assign credit proportional to max(0, m − 2s/3) at each node. A median split leaves its heavier side at most half the subtree. A complete Stout–Warren shape leaves it at most two thirds. Either rebuild clears the accumulated credit inside that subtree. At a violating root, m > 0.7s, so that root alone holds credit proportional to at least s/30. With an appropriate constant this pays for the linear rebuild. A single update increases credit by only constant work per ancestor on a logarithmic path. For whole-tree shrinkage, q−n records deletions net of intervening insertions: when n falls below alpha times q there is enough credit to pay for rebuilding, after which q resets. This accounts for amortized cost at the principal study setting. The two-thirds argument does not extend to the follow-up DSW experiment at alpha = 0.55.
+
+The frequency forecast asks a different question. Begin with one external gap at depth zero. Inserting a rank into a gap at depth d replaces it with two gaps at depth d+1. Under uniform random-rank insertion, the depth distribution of these gaps supplies a forecast for the next insertion. The tail beyond depths 19, 21 and 23 gives the forecast for the three populations. This approximation ignores how previous rebuilds have already changed the depth distribution. It can overestimate trigger frequency while the amortized bound still holds.
+
 ## 10. Experimental setup
 
 The integrated analyst study uses five seeds per size, 100 checkpoints per
@@ -233,10 +260,10 @@ The timer surrounds update blocks only; setup, generation, audits and depth
 scans are excluded. Time per operation divides by twice the completed pairs.
 Rebuild counters are reset after construction.
 
-The recorded analyst machine was Ryzen 7 7840HS, Windows 11 build 26300,
+For the primary alpha = 0.7 study, the recorded machine was Ryzen 7 7840HS, Windows 11 build 26300,
 aggregate L1/L2/L3 capacities 512 KiB/8 MiB/16 MiB. The compiler was Zig 0.14.1
 C++17 with -O2 -DNDEBUG, recorded source revision 778c6d4 in the development
-checkout. The separate reference experiment machine and GCC flags are in
+checkout. The reference experiments ran separately on an Intel Core i7-14700HX under Windows 11, using GCC 16.2.0 with -O2. Windows reported 28,672 KiB of L2 and 33,792 KiB of L3. Additional details are in
 [the machine record](results/metadata/adversary/machine.json).
 
 No usable hardware cache counters were collected. Wall-clock timing varies
@@ -296,6 +323,66 @@ Source: `results/raw/adversary/insertions-upstream-*.csv`; script:
 SD. Ascending/descending patterns are strong tested cases; rebuilt work and
 time are reported separately in the insertion summary.
 
+### Which schedule degrades the successor tree fastest?
+
+Final depth alone cannot distinguish a schedule that builds a long path early from one that reaches it near the end. The reference study also measured the area under the depth trajectory divided by the pair count and the first sampled crossing of 1.5 times initial depth. At 4,000 keys, shallow exact-fit crossed that threshold in all five runs by the first sampled checkpoint (160,000 pairs). Uniform exact-fit crossed it in all five runs at a mean first crossing of 10,688,000 pairs. Mean depth over the run was 1,229.975 versus 19.414. Deletion high in the tree exposes large descendant subtrees to repeated one-sided replacements. Reusing the deleted rank lets the displaced key return through ordinary leaf insertion.
+
+![Final depth under uniform exact-fit deletion across populations. The curves use the separate reference implementation.](results/figures/adversary/exact-scaling.png)
+
+![Final depth under shallow exact-fit deletion across populations. Compare the vertical scales before comparing slopes.](results/figures/adversary/shallow_exact-scaling.png)
+
+In the fresh-key comparison at the same population, targeting shallow two-child nodes raised mean depth over the run from 16.989 to 40.855 for always-successor. The schedule still changed shape, but less severely than targeted exact fit. This difference matters when interpreting a workload in which deleted keys seldom return. The most damaging of the tested schedules depends on the allowed replacement rule.
+
+### Which insertion order triggers the most rebuilds?
+
+At 4,000 insertions into the upstream implementation, ascending order produced 2,149 array rebuilds (0.53725 per insertion). Descending order produced 1,957 DSW rebuilds (0.48925 per insertion). These two patterns led their respective modes at the smaller sizes as well. Monotone arrival keeps extending an outside search path until the depth threshold is crossed. The two methods can then leave different shapes, so the next trigger can arrive at a different insertion.
+
+![Insertion frequencies in the separate reference implementation. Its DSW variant used a different compression scheme.](results/figures/adversary/insertions-reference.png)
+
+In that reference implementation, alternating extremes led the DSW comparison at 4,000 keys (0.47325 events per insertion). This is a concrete reason to preserve implementation labels when comparing graphs. An event can rebuild a small subtree or almost the whole tree. Frequency identifies the winner for the stated adversarial target; total nodes rebuilt and rotations answer the separate question of work.
+
+### When randomized Hibbard has lower mean depth
+
+The Scapegoat trigger constrains the longest insertion path. It allows many legal shapes at the same population, and does not minimize the sum of all depths after each update. Choosing predecessor or successor randomly also avoids repeatedly favoring the same side. The ordinary-churn result at alpha = 0.7 is therefore plausible: randomized Hibbard had lower final mean depth than either rebuilding method at all three measured sizes.
+
+![Ordinary random churn with alpha = 0.55. Each panel shows five trials on shared traces within the panel; shading is one sample standard deviation.](results/figures/analyst/alpha055-random/ordinary-random-alpha055-three-populations.png)
+
+| Keys | Always successor | Randomized Hibbard | Array rebuild | DSW rebuild |
+| ---: | ---: | ---: | ---: | ---: |
+| 1,000 | 13.45 | 9.72 | 8.91 | 8.95 |
+| 2,000 | 18.41 | 10.83 | 9.93 | 9.95 |
+| 4,000 | 22.85 | 12.07 | 10.83 | 10.99 |
+
+Entries are five-trial means of final average depth, in edges. The alpha = 0.55 follow-up ran in a Linux container with GCC 14.2.0. Its archived 4,000-key first trial combines three completed strategy series with a separately rerun DSW series using the same seed and trace hash. A subsequent full replay reproduced the recorded depths. This follow-up selected alpha = 0.55 after exploration and used workload seeds 20261118 through 20261122 at each size. At the tighter setting both Scapegoat variants had lower final mean depth than randomized Hibbard. Within each study the strategies shared traces. Between studies the seeds also changed, so the numerical difference cannot isolate the effect of alpha. A paired parameter comparison would hold each workload and policy seed fixed while varying only alpha.
+
+### Reproducing the comparison
+
+From a clean checkout with the documented C++ toolchain and Python dependencies, run `python scripts/run_all.py`. This builds the binaries, runs the tests, executes the full default study, and regenerates the figures. For the separate parameter study run `python scripts/run_alpha055.py` after the build and point `scripts/plot_alpha055.py --input` at the new trial directory. To regenerate only the published figures, use `python scripts/run_all.py --figures-only`.
+
+Revision 03f2c8c passed all ten registered tests. Across each study's 6,000 strategy-checkpoint rows, an independent clean-checkout replay matched the submitted trace hashes, heights and numeric average depths. These are deterministic comparisons. The original machine's latency measurements remain the timing evidence. The historical targeted-churn figures can be regenerated from their raw CSVs without rerunning the separate reference implementation.
+
+### Additional figures and independent replay
+
+The reference ordinary-churn series provides the control for the targeted schedules. Comparing uniform and shallow deletion at the same population distinguishes the cost of a directional replacement policy from the additional effect of targeting its shallow two-child nodes.
+
+![Reference ordinary churn: depth against completed pairs at each population.](results/figures/adversary/random-depth.png)
+
+![Reference ordinary churn: final depth against live population.](results/figures/adversary/random-scaling.png)
+
+![Shallow fresh-key churn: final depth against live population. Compare with uniform fresh-key churn above.](results/figures/adversary/shallow_fresh-scaling.png)
+
+The independent analyst replay provides one vector figure per population. Its axes and policies match the primary study, so each panel can be checked against its counterpart in the main results.
+
+![Analyst replay at 1,000 live keys: mean depth over the full churn trajectory.](results/figures/analyst-replay/depth-1000.svg)
+
+![Analyst replay at 2,000 live keys: mean depth over the full churn trajectory.](results/figures/analyst-replay/depth-2000.svg)
+
+![Analyst replay at 4,000 live keys: mean depth over the full churn trajectory.](results/figures/analyst-replay/depth-4000.svg)
+
+![Follow-up detail at 1,000 keys, alpha = 0.55. The wider panel separates the two rebuilding curves from the randomized Hibbard curve.](results/figures/analyst/alpha055-random/ordinary-random-alpha055-n1000.png)
+
+The [vector edition of the three-population follow-up](results/figures/analyst/alpha055-random/ordinary-random-alpha055-three-populations.svg) contains the same panels as its PNG edition shown above.
+
 ## 12. Limitations
 
 Three finite populations and n²-pair runs do not establish an asymptotic law.
@@ -305,7 +392,7 @@ The historical full reference benchmark is not self-contained in this repository
 the raw measurements and their figures are reproducible as data transformations.
 
 This report is structured for team review, not a claim that the final submission
-is complete. Final slides, author verification of derivation page limits and
+is complete. Author verification of derivation page limits and
 identity details, remaining tool-version/prompt records, instructor I/O agreement
 and release tagging remain on [the checklist](docs/SUBMISSION_CHECKLIST.md).
 The report PDF is generated from this Markdown; regenerate it after revisions.
@@ -314,10 +401,11 @@ The report PDF is generated from this Markdown; regenerate it after revisions.
 
 - Hibbard (1962), Some Combinatorial Properties of Certain Trees with Applications to Searching and Sorting.
 - Eppinger (1983), An Empirical Study of Insertion and Deletion in Binary Search Trees.
+- Culberson (1985), The Effect of Updates in Binary Search Trees, STOC. DOI 10.1145/22145.22168.
 - Culberson and Munro (1990), Analysis of the Standard Deletion Algorithms in Exact Fit Domain Binary Search Trees, Algorithmica 5, 295-311.
 - Galperin and Rivest (1993), Scapegoat Trees, SODA, 165-174.
 - Stout and Warren (1986), Tree Rebalancing in Optimal Time and Space, CACM 29(9), 902-908.
-- Bayer and McCreight (1972), Organization and Maintenance of Large Ordered Indices.
+- Bayer and McCreight (1972), Organization and Maintenance of Large Ordered Indexes.
 - Sedgewick, Mathematical Analysis of Combinatorial Algorithms, chapter 8, Trees.
 
 Detailed citations appear in the authored D1-D6 derivations. Local technical
