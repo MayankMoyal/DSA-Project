@@ -33,6 +33,7 @@ endfunction()
 
 tree_program(churn_simulator app/churn_simulator.cpp)
 tree_program(bst_baseline bench/bst_baseline.cpp)
+tree_program(beginner_demo bench/beginner_demo.cpp)
 
 # The analyst and oracle branches contribute these files when merged.
 if(EXISTS "${PROJECT_SOURCE_DIR}/bench/churn_benchmark.cpp")

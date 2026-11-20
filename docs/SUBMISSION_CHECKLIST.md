@@ -10,7 +10,7 @@ This list distinguishes available artifacts from items still needing team action
 - REPORT.md organized into the 13 requested sections and matching REPORT.pdf export.
 - Six derivation PDFs named D<number>_<roll>.pdf; original authored contents retained.
 - Raw measurements, summaries, figures and source/machine metadata in results/.
-- scripts/plot_results.py regenerates all 16 recorded figures from raw CSVs.
+- scripts/plot_results.py regenerates all 19 recorded figures from raw CSVs.
 - Tracked build executables/debug symbols removed; ignore rules prevent reintroduction.
 
 ## Before final tagging

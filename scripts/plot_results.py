@@ -12,6 +12,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+import plot_alpha055
+
 STRATEGIES = ["successor", "random_policy", "scapegoat_array", "scapegoat_dsw"]
 LABELS = ["Hibbard successor", "Hibbard randomized", "Scapegoat array", "Scapegoat DSW"]
 COLORS = ["#c45132", "#2376ad", "#27826a", "#8354a1"]
@@ -223,7 +225,10 @@ def main():
     analyst(raw / "analyst" / "random-raw.csv", output / "analyst")
     analyst(raw / "analyst-replay" / "raw.csv", output / "analyst-replay", svg=True)
     adversary(raw / "adversary", output / "adversary")
-    print("Regenerated 16 figures from recorded CSVs; interrupted and smoke runs excluded.")
+    trials = plot_alpha055.load_trials(raw / "analyst" / "alpha055-random")
+    checkpoints, _ = plot_alpha055.compute_summaries(trials)
+    plot_alpha055.draw_figures(checkpoints, output / "analyst" / "alpha055-random")
+    print("Regenerated 19 figures from recorded CSVs; interrupted and smoke runs excluded.")
 
 
 if __name__ == "__main__":

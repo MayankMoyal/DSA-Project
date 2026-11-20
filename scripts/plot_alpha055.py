@@ -136,6 +136,22 @@ def draw_size(axis, rows, size):
     axis.legend(fontsize=7, loc="center right")
 
 
+def draw_figures(checkpoints, destination):
+    destination.mkdir(parents=True, exist_ok=True)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5), constrained_layout=True)
+    for axis, size in zip(axes, SIZES):
+        draw_size(axis, checkpoints, size)
+    fig.suptitle("Ordinary random churn, Scapegoat alpha = 0.55: five-trial mean +/- sample SD")
+    fig.savefig(destination / "ordinary-random-alpha055-three-populations.png", dpi=180, bbox_inches="tight")
+    fig.savefig(destination / "ordinary-random-alpha055-three-populations.svg", bbox_inches="tight")
+    plt.close(fig)
+    fig, axis = plt.subplots(figsize=(8.5, 5), constrained_layout=True)
+    draw_size(axis, checkpoints, 1000)
+    axis.set_title("Ordinary random churn: n = 1,000 (five trials)")
+    fig.savefig(destination / "ordinary-random-alpha055-n1000.png", dpi=180, bbox_inches="tight")
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=Path("results/raw/analyst/alpha055-random"))
@@ -146,19 +162,7 @@ def main():
     checkpoints, finals = compute_summaries(datasets)
     save_csv(args.summary / "checkpoint-depth-summary.csv", checkpoints)
     save_csv(args.summary / "final-depth-summary.csv", finals)
-    args.figures.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5), constrained_layout=True)
-    for axis, size in zip(axes, SIZES):
-        draw_size(axis, checkpoints, size)
-    fig.suptitle("Ordinary random churn, Scapegoat alpha = 0.55: five-trial mean +/- sample SD")
-    fig.savefig(args.figures / "ordinary-random-alpha055-three-populations.png", dpi=180, bbox_inches="tight")
-    fig.savefig(args.figures / "ordinary-random-alpha055-three-populations.svg", bbox_inches="tight")
-    plt.close(fig)
-    fig, axis = plt.subplots(figsize=(8.5, 5), constrained_layout=True)
-    draw_size(axis, checkpoints, 1000)
-    axis.set_title("Ordinary random churn: n = 1,000 (five trials)")
-    fig.savefig(args.figures / "ordinary-random-alpha055-n1000.png", dpi=180, bbox_inches="tight")
-    plt.close(fig)
+    draw_figures(checkpoints, args.figures)
     print("Verified 15 complete trials (5 per population), 4 tree strategies per trial")
     print("Wrote 1,200 checkpoint summaries, 12 final-depth summaries, and three graph files")
 
