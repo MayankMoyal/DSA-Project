@@ -6,7 +6,7 @@ Measured reference experiments, 16 November 2026. No global optimality or ordina
 
 The full dataset has 60 churn runs: four workloads, three populations (1000, 2000, 4000), five independent evaluation seeds each. Every run executes n squared delete/insert pairs against four strategies, giving 420000000 generated pairs and 1680000000 strategy-pair replays. Initialization order and each replay block are identical across strategies. A sorted-array oracle validates every generated pair; every checkpoint audits full tree contents and invariants. Trial seeds are 202611160 + 31*n + trial; policy seed is workload_seed XOR 0x504f4c494359. Initial and cumulative trace hashes are in every CSV.
 
-The interrupted partial n=4000 shallow_exact trial is retained under results/interrupted with its checksum in the manifest. Only that incomplete trial was restarted; completed runs were hash-verified and retained. The partial run is excluded from reported aggregates.
+The interrupted partial n=4000 shallow_exact trial is retained under `results/raw/adversary/interrupted/` with its checksum in the manifest. Only that incomplete trial was restarted; completed runs were hash-verified and retained. The partial run is excluded from reported aggregates.
 
 Raw insertion experiments additionally have 30 runs: unchanged upstream and reference Scapegoat implementations, three sizes and five trials, each covering five patterns and two rebuild modes at alpha=0.7. The original teammate code uses basic left-packed Stout-Warren compression; the reference uses perfect-leaves. These are distinct implementations, explicitly labeled.
 
@@ -40,6 +40,14 @@ At n=2000, shallow_exact has the largest mean depth-over-run among the four test
 At n=4000, shallow_exact has the largest mean depth-over-run among the four tested schedules. shallow_exact/exact area ratio is 63.36; shallow_fresh/random is 2.40. These values support the exact-fit acceleration hypothesis and support the fresh-key acceleration hypothesis for this tested size and metric.
 
 Depth bias can carry into fresh-key churn, but its size depends on key distribution, update order and targeting. An exact-fit biased schedule can be much worse than the random exact-fit expectation without contradicting Culberson-Munro. Three finite sizes, reference implementations and n squared finite trajectories cannot establish a stationary distribution or asymptotic exponent. The sqrt(n) and 2 ln(n) curves in figures are unscaled references, not fitted laws.
+
+## Why randomized Hibbard can have lower average depth
+
+Randomized Hibbard chooses either the predecessor or the successor on a two-child deletion. This avoids consistently favoring one side. Scapegoat bounds tree height and rebuilds when its threshold is crossed. A height bound does not guarantee the smallest *average* depth after every update.
+
+In the integrated ordinary-churn study at 4,000 live keys and alpha = 0.7, final mean depths over five trials were 12.87 for randomized Hibbard, 14.48 for array rebuilding and 14.44 for DSW. In the separate alpha = 0.55 study they were 12.07, 10.83 and 10.99 respectively. The smaller alpha enforces a tighter height threshold. The studies also used different seeds, so the difference between studies cannot be attributed solely to alpha. Each within-study comparison uses the same workload trace across strategies. These figures measure depth in edges. For update speed, use the timing measurements.
+
+See the integrated [alpha = 0.7 results](../results/summary/analyst/random-summary.csv) and [alpha = 0.55 results](../results/summary/analyst/alpha055-random/final-depth-summary.csv). The table below reports the earlier reference implementation.
 
 ## Strategy comparison at n=4000
 
@@ -89,7 +97,7 @@ These are maxima among five tested pattern families, not among all permutations.
 
 The measured machine was an Intel Core i7-14700HX (20 cores, 28 logical processors), Windows 11 Home Single Language 10.0.26300; Windows-reported L2/L3 totals were 28672/33792 KiB. g++ 16.2.0 used -std=c++17 -O2 -Wall -Wextra -Wpedantic. See machine.json for provenance. Timings are unpinned and subject to scheduler, frequency, background-load and allocator variation. No cache locality or cache-miss claim is made; no profiler data were collected.
 
-Full churn results require the separately staged reference project because the measured base snapshot of teammate Structure A lacks deletion and depth APIs. The contribution includes the input generators, unchanged-upstream Scapegoat measurement driver, raw results and source hashes, but intentionally excludes other roles' draft implementations. Use the reference project in the general folder to reproduce full churn; integration into the team simulator still requires the owners' API work and review. The public contribution is not the complete final team release.
+The 16 November churn measurements used a separate reference implementation. To run the integrated trees from this checkout, use `python scripts/run_all.py` at the repository root. The historical CSVs document the original experiment.
 
 The source hashes and CSV SHA-256 values are checked by the reference audit. Generator checks passed 200000 pairs plus CLI round trips. The reference differential harness passed 1000000 seeded operations across four strategies, with audits after every operation. A deliberately faulty dropped-erase test double was shrunk to insert 13 / delete 13 and independently checked 1-minimal. This fixture demonstrates the shrinker, not a real discovered tree defect.
 
