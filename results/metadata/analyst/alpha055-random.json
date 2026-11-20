@@ -1,0 +1,96 @@
+{
+  "study": "Scapegoat alpha=0.55 versus two Hibbard deletion policies under ordinary random churn",
+  "purpose": "Post-hoc parameter sensitivity follow-up; alpha=0.55 was selected after exploratory alpha sweep",
+  "live_sizes": [
+    1000,
+    2000,
+    4000
+  ],
+  "pair_count_rule": "n*n per trial",
+  "trials_per_size": 5,
+  "checkpoints_per_strategy_per_trial": 100,
+  "strategies": [
+    "successor",
+    "random_policy",
+    "scapegoat_array",
+    "scapegoat_dsw"
+  ],
+  "alpha_for_scapegoat": 0.55,
+  "seeds": [
+    20261118,
+    20261119,
+    20261120,
+    20261121,
+    20261122
+  ],
+  "recovered_trial": "n=4000 trial=1: first three complete strategy series from an interrupted all-strategies CSV; missing DSW series independently rerun with identical seed and trace hash, then concatenated. All 400 resulting rows validated.",
+  "runner_source": "Locally reconstructed project tree sources retrieved from connected GitHub; not a fresh clone of the eventual final tagged release. Re-run with project checkout for final archival assurance.",
+  "environment": {
+    "operating_system": "Linux container",
+    "compiler": "g++ 14.2.0",
+    "processor": "AMD EPYC 9V74 reported by container; shared/virtualized CPU",
+    "timing_limitation": "Machine times cannot be equated with or used as timing evidence for the Windows final release."
+  },
+  "raw_files": {
+    "random-n1000-trial1.csv": {
+      "sha256": "1fa362ec77bfc7e465e6830d9a97c210a91a3b76f49d1c4036877240f1ec9b74",
+      "rows": 400
+    },
+    "random-n1000-trial2.csv": {
+      "sha256": "322b1d3e44169ed43337595e69b9b5a56e47eedd4c1483e78e7581caf0fef197",
+      "rows": 400
+    },
+    "random-n1000-trial3.csv": {
+      "sha256": "0fc00d4773b9ccc1471b07c6e44f75d9e211884cfb6bae3b7e0d111a8d5b7ef5",
+      "rows": 400
+    },
+    "random-n1000-trial4.csv": {
+      "sha256": "93fe5557be2132e62039e5a3514129bd74e1a52819a551e685b5f62be6d5efea",
+      "rows": 400
+    },
+    "random-n1000-trial5.csv": {
+      "sha256": "764624b5288517d706325cb59d4fbf2b8c1f8e815699b841d48f7baff0737949",
+      "rows": 400
+    },
+    "random-n2000-trial1.csv": {
+      "sha256": "d05c7e6c9c7ace9710d23312b70d66f233bc70610dc30bf2f08d104787e18280",
+      "rows": 400
+    },
+    "random-n2000-trial2.csv": {
+      "sha256": "a82b80dda77c12eb0c9acac216ffcd4ecb5724e5cd188cf3ee3410640dd3d90d",
+      "rows": 400
+    },
+    "random-n2000-trial3.csv": {
+      "sha256": "0a2f753f3c72143526db79efb6891487e53f6aa914795f0caeafee43740da00a",
+      "rows": 400
+    },
+    "random-n2000-trial4.csv": {
+      "sha256": "25b80d5387b03dc8f9202e52618f849745e978e743eff427bb798b7251fb9278",
+      "rows": 400
+    },
+    "random-n2000-trial5.csv": {
+      "sha256": "ca4c2425436bb5531131910810feead7719ccdcb7a1d9d8fb959d13372a4de9f",
+      "rows": 400
+    },
+    "random-n4000-trial1.csv": {
+      "sha256": "a01b141d0b5b31dce358c1506e72ccf449a989fbcb739b7fc39ce082c2dcfb59",
+      "rows": 400
+    },
+    "random-n4000-trial2.csv": {
+      "sha256": "6ee9f5872344f0a0271b3bf6387a89812b98b01a7d3666a0a86122c05eed5d14",
+      "rows": 400
+    },
+    "random-n4000-trial3.csv": {
+      "sha256": "aa466b417a7c46ac08319de1ddd4e3558472da54f24674adee56a4ba4f64b96b",
+      "rows": 400
+    },
+    "random-n4000-trial4.csv": {
+      "sha256": "210235a0cd895cb61de3bd3392bcf748d4f699fc69d8b8ce798cfb862f9f4cdf",
+      "rows": 400
+    },
+    "random-n4000-trial5.csv": {
+      "sha256": "5a156e738de6987b0c4c17a74d75f829723c6a54dc0f40185676f2a5ff1fcf62",
+      "rows": 400
+    }
+  }
+}
