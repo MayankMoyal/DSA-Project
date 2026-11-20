@@ -9,3 +9,4 @@ __pycache__/
 /results/raw/run-*/
 /results/figures/run-*/
 /oracle-failure-*/
+/docs/slides/PRESENTATION_SCRIPT.md
