@@ -48,8 +48,10 @@ OpenAI ChatGPT assisted in creating temporary C++ test files used to test the Sc
 
 The temporary test files were used to check the behaviour of the Scapegoat Tree operations, including insertion, deletion and subtree rebuilding. The source code and generated tests were reviewed and adapted to match the final implementation.
 
-## Sai â€” Oracle and D4
+## Bahiram Sai Chhagan (mc250041007) — Oracle and D4
 
-OpenAI ChatGPT (Codex) generated the initial Oracle C++ source, test and reduction logic, CMD scripts, proof draft, presentation material and documentation from the two course briefs and inspected repository source. The generated implementation was adapted to the repository's bool/void insert difference, four concrete configurations, existing adversary generator and root-zero depth convention. The assistant compiled and exercised the C++ using GCC on Linux, including a disposable mutation, and checked the proof against exhaustive permutations through eight keys. Git was used to inspect the source, and ReportLab to typeset the D4 PDF.
+OpenAI ChatGPT (Codex) generated the initial Oracle C++ source, test and reduction logic, CMD scripts, proof draft, presentation material and documentation from the two course briefs and inspected repository source. The generated implementation was adapted to the repository's bool/void insert difference, four concrete configurations, existing adversary generator and root-zero depth convention. The assistant compiled and exercised the C++ using GCC on Linux, including a disposable mutation, and checked the proof against exhaustive permutations through eight keys. Git was used to inspect the source, and ReportLab to typeset the D4 PDF. I ran the Windows verification on 17 November 2026 using GCC 16.2.0 (WinLibs, C++17) and Python 3.13.17 for the fault demonstration.
 
-Sai's subsequent edits, tests and review responses: I compiled and ran the generated C++ on Windows, verified all three full-scale churn runs and the D4 permutation checks, and reproduced the injected size bug with the two-operation trace..
+One prompt I used to prepare for the presentation was “What exactly is the D4 about why are we doing it, and a script for presentation”.
+
+Sai's subsequent edits, tests and review responses: I compiled and ran the generated C++ on Windows, verified all three full-scale churn runs and the D4 permutation checks, and reproduced the injected size bug with the two-operation trace.
