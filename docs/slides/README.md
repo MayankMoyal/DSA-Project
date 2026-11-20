@@ -9,5 +9,5 @@ PowerPoint on 20 November 2026. PDF does not play animation sequences. In
 particular, slide 11 retains the question panel over the timing column.
 Use the PowerPoint for the animated reveals during presentation.
 
-The speaking script and rubric checklist belong to the previous presentation
-revision and have not been checked against this newly supplied final deck.
+The rubric checklist belongs to the previous presentation revision and has
+not been checked against this newly supplied final deck.
