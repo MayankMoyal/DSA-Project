@@ -42,6 +42,12 @@ See [TESTING.md](TESTING.md) for test commands and
 measurement and document-generation tools. Recorded experiment evidence is
 under `results/metadata/adversary/`.
 
+## Avinash Bhadane (250041006): Structure A
+
+| Tool and version or date | Used by | Used for | Files affected | What we changed or verified |
+| --- | --- | --- | --- | --- |
+| OpenAI ChatGPT with Codex, 21 Nov 2026 | Avinash Bhadane | Compiling and running the Structure A test suite and the full-scale churn verifier; checking README and TOOLS.md against the course handouts | `src/tests/test_struct_A.cpp`, `src/tests/test_struct_A_churn.cpp`, `README.md`, `TOOLS.md` (reviewed only; `src/structA/hibbard_bst.cpp` was read, not edited) | Both Hibbard policies passed 21,000,000 delete-insert pairs per policy at all three required sizes. Suggestions were returned in chat only. All code and documentation edits were made manually by me. |
+
 ## Structure B Owner â€” Scapegoat Tree
 
 OpenAI ChatGPT assisted in creating temporary C++ test files used to test the Scapegoat Tree implementation during development. It was also used to format and organize the source code for improved readability and consistency.
