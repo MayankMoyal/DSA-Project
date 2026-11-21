@@ -126,6 +126,11 @@ in `results/figures/`. New experiments use timestamped `run-*` folders, preservi
 submitted measurements. [results/README.md](results/README.md) explains provenance
 and historical reference limitations. Plot generation uses `scripts/plot_results.py`.
 Export the matching report PDF with `python scripts/export_report.py`.
+After building, run `python scripts/run_alpha055.py` to repeat the separate
+five-trial study at α = 0.55. The default output is `.build/alpha055-local-replay/`.
+For another run, pass `--output` with a fresh directory name. The [recorded
+final depths](results/summary/analyst/alpha055-random/final-depth-summary.csv)
+cover all four strategies at 1,000, 2,000 and 4,000 live keys.
 
 ## Repository map
 
@@ -139,9 +144,10 @@ Export the matching report PDF with `python scripts/export_report.py`.
 | `bench/` | Benchmark harness and cost predictions |
 | `tests/` | Application regression and repository-layout checks |
 | `scripts/` | Build/test/experiment runner, plot and report exporters |
+| `frontend/` | Local dashboard for running the C++ simulator, viewing tree snapshots and exporting checkpoint data. See the [dashboard instructions](frontend/README.md). |
 | `results/` | Raw CSVs, summaries, generated figures and measurement metadata |
 | `docs/derivations/` | D1-D6 sources and `D<number>_<roll>.pdf` deliverables |
-| `docs/slides/` | Reserved for the team's final `slides.pdf` |
+| `docs/slides/` | [Presentation PDF](docs/slides/slides.pdf), [animated PowerPoint](docs/slides/slides.pptx) and [offline demonstration](docs/slides/Live-demo.html). |
 | Root documents | README, interface, report and tool records |
 
 ## Results at a glance
@@ -154,6 +160,11 @@ Mean final node depth in edges (rounded):
 | 1,000 | 13.84 | 9.63 | 11.36 | 11.49 |
 | 2,000 | 17.83 | 10.95 | 13.17 | 12.79 |
 | 4,000 | 23.98 | 12.87 | 14.48 | 14.44 |
+
+The table above uses α = 0.70 for both Scapegoat trees. In the separate
+α = 0.55 study, both rebuild methods had lower mean final depth than randomized
+Hibbard at all three sizes. The two studies used different seeds, so their
+difference cannot be attributed to α alone.
 
 The [report](REPORT.md) and [summary CSV](results/summary/analyst/random-summary.csv)
 include sample SD, timings, rebuild rates, measurement setup and limitations.
