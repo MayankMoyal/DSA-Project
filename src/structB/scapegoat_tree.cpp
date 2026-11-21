@@ -63,7 +63,7 @@ void ScapegoatTree::insert(ll key) {
     }
 }
 
-Node* ScapegoatTree::findMin(Node* v) const {  
+Node* ScapegoatTree::findMin(Node* v) const {  // Finds the minimum of the subtree
     while (v != nullptr && v->left != nullptr) {
         v = v->left;
     }
@@ -393,7 +393,7 @@ void ScapegoatTree::resetRebuildStats() {
 }
 
 
-
+ 
 // Read-only breadth-first snapshot: key, left index, right index (-1 = absent).
 std::vector<std::array<long long, 3>> ScapegoatTree::snapshot() const {
     std::vector<std::array<long long, 3>> result;
