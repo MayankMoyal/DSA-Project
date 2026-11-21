@@ -34,7 +34,7 @@ def inline(text):
     def link(match):
         label, target = match.groups()
         if not target.startswith('https://'):
-            target = 'https://github.com/MayankMoyal/DSA-Project/blob/03f2c8c/' + target
+            target = 'https://github.com/MayankMoyal/DSA-Project/blob/44770556639c747bb4a11a83c60f65918004e677/' + target
         return f'<link href="{target}" color="#205078">{label}</link>'
     text=re.sub(r'\[([^]]+)\]\(([^)]+)\)',link,text)
     text=re.sub(r'`([^`]+)`',r'<font name="Report">\1</font>',text)
