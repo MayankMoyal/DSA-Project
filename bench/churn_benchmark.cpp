@@ -43,7 +43,7 @@ Options parseOptions(int argc, char** argv) {
     if (argc < 6 || argc > 9) {
         throw std::invalid_argument("usage: churn_benchmark [--quick | n pairs seed trial workload [checkpoint [strategy [alpha]]]]; workload = random|exact|shallow_exact|shallow_fresh");
     }
-        options.n = adversary::populationArgument(argv[1]);
+    options.n = adversary::populationArgument(argv[1]);
     options.pairs = adversary::unsignedArgument(argv[2], "pairs");
     options.seed = adversary::unsignedArgument(argv[3], "seed");
 
@@ -62,7 +62,7 @@ Options parseOptions(int argc, char** argv) {
         options.strategy = argv[7];
     }
     if (argc == 9) {
-                const std::string token = argv[8];
+        const std::string token = argv[8];
         std::size_t used = 0;
         options.alpha = std::stod(token, &used);
         if (used != token.size() ||
