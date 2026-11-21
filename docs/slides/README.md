@@ -14,7 +14,7 @@ not been checked against this newly supplied final deck.
 
 ## Interactive HTML demonstration
 
-Download [Underqualified-Presentation.html](Underqualified-Presentation.html) and open it directly in a browser. This single file works offline on another laptop.
+Download [Live-demo.html](Live-demo.html) and open it directly in a browser. This single file works offline on another laptop.
 
 The small-tree example inserts keys 1–15, then deletes 8, 4, 12, 2, 14, 6 and 10. Next, Back, Play and Reset show recorded states from the C++ implementations. A second example demonstrates deleting and reinserting a key. Animations connect operation states; the DSW counter reports internal rotations.
 
