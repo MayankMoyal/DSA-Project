@@ -1,4 +1,4 @@
-make_trace# Aditya's analyst guide
+# Aditya's analyst guide
 
 ## 1. Follow one key through the benchmark
 
