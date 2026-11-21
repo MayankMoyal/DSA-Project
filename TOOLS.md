@@ -56,11 +56,11 @@ under `results/metadata/adversary/`.
 | --- | --- | --- | --- | --- |
 | OpenAI ChatGPT with Codex, 21 Nov 2026 | Avinash Bhadane | Compiling and running the Structure A test suite and the full-scale churn verifier; checking README and TOOLS.md against the course handouts | `src/tests/test_struct_A.cpp`, `src/tests/test_struct_A_churn.cpp`, `README.md`, `TOOLS.md` (reviewed only; `src/structA/hibbard_bst.cpp` was read, not edited) | Both Hibbard policies passed 21,000,000 delete-insert pairs per policy at all three required sizes. Suggestions were returned in chat only. All code and documentation edits were made manually by me. |
 
-## Structure B Owner â€” Scapegoat Tree
+## Krish Zinzuvadiya (250041022) — Structure B
 
-OpenAI ChatGPT assisted in creating temporary C++ test files used to test the Scapegoat Tree implementation during development. It was also used to format and organize the source code for improved readability and consistency.
-
-The temporary test files were used to check the behaviour of the Scapegoat Tree operations, including insertion, deletion and subtree rebuilding. The source code and generated tests were reviewed and adapted to match the final implementation.
+| Tool and version or date | Used by | Used for | Files affected | What we changed or verified |
+| --- | --- | --- | --- | --- |
+| OpenAI ChatGPT, 21 Nov 2026 | Krish Zinzuvadiya  | Creating temporary C++ test files for the Scapegoat Tree implementation and formatting the source code for readability and consistency | `scapegoat_tree.h`, `scapegoat_tree.cpp`, temporary C++ test files | ChatGPT assisted in creating temporary tests for insertion, deletion and subtree rebuilding. The generated tests and source-code suggestions were reviewed and adapted to match the final implementation. All final changes were reviewed by me. |
 
 ## Mallhar Totey (mc250041026) - Architect and D3
 
