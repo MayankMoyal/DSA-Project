@@ -20,13 +20,13 @@ The benchmark and results are available in [bench/](bench/), [results/](results/
 
 ### Measurement and correctness checks
 
-Each trial starts all four strategies with the same insertion order and replays the same sequence of deleteâ€“insert pairs. The raw CSV records the seed and trace hash so that a reviewer can identify the workload used in each comparison.
+Each trial starts all four strategies with the same insertion order and replays the same sequence of delete–insert pairs. The raw CSV records the seed and trace hash so that a reviewer can identify the workload used in each comparison.
 
 The benchmark resets the scapegoat rebuild counters after constructing the initial tree. This matters because initial insertions can trigger rebuilds before the first churn pair. At each checkpoint, the benchmark compares the ordered tree contents with the expected live keys and checks the structure's invariants. These checks and the depth scans run outside the timed update block.
 
 ### Statistics and figures
 
-The study covers 1,000, 2,000, and 4,000 live keys, with five seeded trials at each size and nÂ² pairs per trial. The 100 checkpoints in each trial show how depth changes over time. The sample standard deviation is calculated across the five trials at a given size.
+The study covers 1,000, 2,000, and 4,000 live keys, with five seeded trials at each size and n² pairs per trial. The 100 checkpoints in each trial show how depth changes over time. The sample standard deviation is calculated across the five trials at a given size.
 
 Python was used to aggregate the captured measurements, and Matplotlib produced the PNG figures in `results/figures/analyst/`. The C++ program `bench/analyst_study.cpp` provides a separate reproduction path that writes CSV summaries and SVG plots. The raw measurements and the summary used in the report are retained together so that each reported value can be checked.
 

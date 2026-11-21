@@ -411,4 +411,4 @@ The report PDF is generated from this Markdown; regenerate it after revisions.
 Detailed citations appear in the authored D1-D6 derivations. Local technical
 sources are [INTERFACE.md](INTERFACE.md), [Oracle verification](oracle/VERIFICATION.md),
 [adversary results](adversary/RESULTS.md), and the Analyst prediction record.
-Tool records are in [TOOLS.md](TOOLS.md) and [TOOLS_ARCHITECT.md](TOOLS_ARCHITECT.md).
+Tool records are in [TOOLS.md](TOOLS.md).
