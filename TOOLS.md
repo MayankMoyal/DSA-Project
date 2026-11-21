@@ -64,11 +64,15 @@ The temporary test files were used to check the behaviour of the Scapegoat Tree 
 
 ## Bahiram Sai Chhagan (mc250041007) — Oracle and D4
 
-OpenAI ChatGPT (Codex) generated the initial Oracle C++ source, test and reduction logic, CMD scripts, proof draft, presentation material and documentation from the two course briefs and inspected repository source. The generated implementation was adapted to the repository's bool/void insert difference, four concrete configurations, existing adversary generator and root-zero depth convention. The assistant compiled and exercised the C++ using GCC on Linux, including a disposable mutation, and checked the proof against exhaustive permutations through eight keys. Git was used to inspect the source, and ReportLab to typeset the D4 PDF. I ran the Windows verification on 17 November 2026 using GCC 16.2.0 (WinLibs, C++17) and Python 3.13.17 for the fault demonstration.
+| Tool | How it was used |
+| --- | --- |
+| OpenAI ChatGPT (Codex) | Generated the initial Oracle code, tests, trace reducer, CMD scripts, D4 proof draft, slides and documentation. Ran Linux GCC checks on the code, the injected fault and all insertion orders through eight keys. |
+| WinLibs GCC 16.2.0 (C++17) | On 17 November 2026, I compiled and tested all four tree variants on Windows, verified all three full-scale churn runs and checked the D4 formula against every insertion order through eight keys. |
+| Python 3.13.17 | I used the Windows fault demo to reproduce the size error with two operations: `I 17`, then `D 17`. |
+| Git | Inspected the repository source. |
+| ReportLab | Typeset the D4 proof PDF. |
 
 One prompt I used to prepare for the presentation was “What exactly is the D4 about why are we doing it, and a script for presentation”.
-
-Sai's subsequent edits, tests and review responses: I compiled and ran the generated C++ on Windows, verified all three full-scale churn runs and the D4 permutation checks, and reproduced the injected size bug with the two-operation trace.
 
 ## Mayank Moyal (250041027) — Adversary and D5
 
