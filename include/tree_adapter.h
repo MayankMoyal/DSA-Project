@@ -1,4 +1,4 @@
-#This file tests makes it possible for the 4 strats to be evaluated against a common sequence of operation
+//This file tests makes it possible for the 4 strats to be evaluated against a common sequence of operation
 
 #pragma once
 
