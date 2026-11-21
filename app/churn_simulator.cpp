@@ -1,4 +1,4 @@
-// Project 3 - Search trees under long-running churn
+
 // Architect's application: reproducible fixed-size churn replay and depth samples.
 // Build and run from the repository root. See README.md.
 
