@@ -11,3 +11,11 @@ Use the PowerPoint for the animated reveals during presentation.
 
 The rubric checklist belongs to the previous presentation revision and has
 not been checked against this newly supplied final deck.
+
+## Interactive HTML demonstration
+
+Download [Underqualified-Presentation.html](Underqualified-Presentation.html) and open it directly in a browser. This single file works offline on another laptop.
+
+The small-tree example inserts keys 1–15, then deletes 8, 4, 12, 2 and 14. Next, Back, Play and Reset show recorded states from the C++ implementations. A second example demonstrates deleting and reinserting a key. Animations connect operation states; the DSW counter reports internal rotations.
+
+The graph replays a validated C++ run with 1,000 keys, 1,000,000 churn pairs, seed 42 and Scapegoat alpha = 0.7. It includes checkpoint CSV export. The recorded experiment parameters are fixed in this portable version.
