@@ -1,14 +1,22 @@
-## Analyst â€” Aditya
 
-### Tools and assistance
+## Aditya (250001005) — Analyst and D6
 
-I used ChatGPT and Codex to help develop the C++ benchmark and study runner.
+| Tool | How it was used |
+| --- | --- |
+| MSYS2 GCC 16.2.0, CMake (C++17) | Compiled and tested the C++ benchmark programs. Earlier recorded Windows measurements used Zig 0.14.1 with `-O2` and `-DNDEBUG`. |
+| C++ `std::chrono` | Measured tree update times for Hibbard BST and Scapegoat Tree implementations. |
+| Python 3 | Ran benchmark experiments, processed CSV files, and calculated means and sample standard deviations. |
+| Matplotlib | Generated comparison graphs for four tree strategies across 1,000, 2,000 and 4,000 nodes, including the alpha = 0.55 study. |
+| Git and GitHub | Managed Analyst contributions, commits, pull requests and team integration. |
+| ChatGPT and Codex | Assisted with benchmark development, code simplification, experiment scripts, graph generation and documentation. The code was compiled and checked using repository tests and recorded results. |
 
-### C++ implementation and build
+### Benchmark and Verification
 
-The analyst benchmark uses the team's Hibbard BST from `src/structA`, scapegoat tree from `src/structB`, and seeded workload generators from `adversary`. It exercises the two Hibbard deletion policies and the two scapegoat rebuilding methods through their existing interfaces.
+The Analyst module compares two Hibbard deletion policies and two Scapegoat rebuilding methods using identical seeded workloads.
 
-The measured Windows build used Zig 0.14.1 as a C++17 compiler with `-O2` and `-DNDEBUG`. The benchmark uses `std::chrono::steady_clock` to time blocks of tree updates. Each deleteâ€“insert pair contains two operations, so the reported time per operation is the elapsed update time divided by twice the number of completed pairs.
+Experiments record average depth, execution time, and rebuilding statistics. The alpha = 0.55 study includes five trials per population and compares all four strategies.
+
+The benchmark and results are available in [bench/](bench/), [results/](results/), and [REPORT.md](REPORT.md). The mathematical analysis is documented in [D6](docs/derivations/D6.md)
 
 ### Measurement and correctness checks
 
