@@ -64,3 +64,16 @@ depend on the strategy. Cumulative rebuild counters exclude initialization.
 
 Use the Analyst's timed benchmark for operation latency. The application
 performs validation and CSV reporting as part of its run.
+
+## Comparing simulator and benchmark runs
+
+For the same population, workload and workload seed, the simulator and benchmark
+generate the same initial keys and delete-insert pairs. The simulator seeds the
+randomized Hibbard deletion policy directly with the supplied seed. The benchmark
+uses `seed ^ 0x504f4c494359` for that policy. Consequently, the randomized tree
+can have different depths in the two programs even when the input trace agrees.
+
+The simulator reports the hash of all input operations through each checkpoint.
+The benchmark reports the hash of the complete input trace on every row.
+Compare the simulator's final hash with the benchmark hash for a run of the
+same length.
