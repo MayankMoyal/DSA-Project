@@ -1,3 +1,4 @@
+#include <array>
 #ifndef SCAPEGOAT_TREE_H
 #define SCAPEGOAT_TREE_H
 
@@ -47,6 +48,7 @@ struct DepthStats {
 
 class ScapegoatTree {
 public:
+    std::vector<std::array<long long, 3>> snapshot() const;
     ScapegoatTree(double a = 0.7,
                   RebuildMode mode = ARRAY_REBUILD);
     ~ScapegoatTree();

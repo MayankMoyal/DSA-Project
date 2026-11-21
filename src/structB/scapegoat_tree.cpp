@@ -393,3 +393,18 @@ void ScapegoatTree::resetRebuildStats() {
 }
 
 
+
+// Read-only breadth-first snapshot: key, left index, right index (-1 = absent).
+std::vector<std::array<long long, 3>> ScapegoatTree::snapshot() const {
+    std::vector<std::array<long long, 3>> result;
+    if (!root) return result;
+    std::vector<const Node*> queue{root};
+    for (std::size_t i = 0; i < queue.size(); ++i) {
+        const auto* node = queue[i];
+        long long left = -1, right = -1;
+        if (node->left) { left = queue.size(); queue.push_back(node->left); }
+        if (node->right) { right = queue.size(); queue.push_back(node->right); }
+        result.push_back({node->key, left, right});
+    }
+    return result;
+}

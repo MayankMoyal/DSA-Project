@@ -32,6 +32,7 @@ function(checked_test target source)
 endfunction()
 
 tree_program(churn_simulator app/churn_simulator.cpp)
+tree_program(tree_demo app/tree_demo.cpp)
 tree_program(bst_baseline bench/bst_baseline.cpp)
 tree_program(beginner_demo bench/beginner_demo.cpp)
 

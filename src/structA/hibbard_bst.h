@@ -1,3 +1,4 @@
+#include <array>
 #pragma once
 #include <vector>
 #include <cstddef>
@@ -18,6 +19,7 @@ struct TreeMetrics {
 };
 class HibbardBst {
 public:
+    std::vector<std::array<long long, 3>> snapshot() const;
     using Key = long long;
     std::vector<Key> inorder() const;
     bool validate() const;

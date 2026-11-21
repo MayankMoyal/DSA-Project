@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Underqualified · Churn lab</title>
+<style>
+:root{font-family:Inter,system-ui,sans-serif;color:#172b29;background:#f1f4ed}*{box-sizing:border-box}body{margin:0}header{padding:22px 5vw;border-bottom:1px solid #cfd8cc;display:flex;justify-content:space-between;font-size:13px}header b{letter-spacing:.1em}main{max-width:1400px;margin:auto;padding:42px 5vw}h1{font-size:clamp(36px,5vw,64px);letter-spacing:-.06em;margin:8px 0 16px;font-weight:600}p{color:#5b6c65;line-height:1.6}.intro{max-width:680px}.layout{display:grid;grid-template-columns:250px 1fr;gap:28px;margin-top:32px}aside,.panel{background:#fff;border:1px solid #d7dfd2;border-radius:16px;padding:24px}label{display:block;font-size:12px;font-weight:600;margin:0 0 8px}input,select{width:100%;padding:11px;border:1px solid #cad5c7;border-radius:7px;background:#fafbf8;color:inherit;margin-bottom:22px;font:inherit;font-size:14px}button{border:0;border-radius:8px;padding:13px 16px;font:inherit;cursor:pointer;background:#1e5544;color:white;width:100%}button:disabled{opacity:.45;cursor:default}#stop{margin-top:10px;background:#e9eee5;color:#28463b}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:#607367}h2{font-size:18px;margin:0}.heading{display:flex;justify-content:space-between;gap:20px;align-items:center}#status{font-size:12px;color:#547565}canvas{width:100%;height:320px;display:block;margin-top:22px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.card{background:#fff;border:1px solid #d7dfd2;border-top:3px solid var(--color);border-radius:10px;padding:18px 14px}.card h3{font-size:12px;font-weight:500;margin:0 0 14px}.value{font-size:32px;letter-spacing:-.05em}.detail{font-size:11px;color:#64736a;line-height:1.8;margin-top:10px}progress{width:100%;height:6px;accent-color:#246347;margin:20px 0 4px}.foot{display:flex;justify-content:space-between;color:#607367;font-size:12px}#error{color:#a22f2f;white-space:pre-wrap}small{font-size:11px;line-height:1.5;color:#68786d}.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;margin-top:14px}.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}#download{width:auto;background:transparent;color:#1e5544;border:1px solid #b9cab6;margin-top:22px;font-size:12px}@media(max-width:900px){.layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}aside form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}}@media(max-width:500px){main{padding:24px 18px}.panel{padding:16px}.foot{display:block}}
+
+body{background:#161616;color:#222;font-family:Arial,sans-serif}
+header{position:fixed;left:0;top:0;bottom:0;width:180px;border:0;color:#eee;padding:32px 20px;display:flex;flex-direction:column;justify-content:space-between}
+header b{letter-spacing:0}header span{font-size:12px;line-height:1.8}
+main{margin:14px 14px 14px 190px;max-width:none;background:#f8f8f8;border-radius:26px;padding:36px 42px}
+h1{font-family:Georgia,serif;font-weight:400;font-size:44px;letter-spacing:-.025em}
+h2{font-family:Georgia,serif;font-weight:400;font-size:26px}
+.eyebrow,p,small{color:#555}.intro{max-width:850px}.panel,aside,.card{border-color:#ccc;background:#fff;border-radius:10px}
+button{background:#191919}#stop{background:#eee;color:#222}input,select{background:#fff;border-color:#bbb}progress{accent-color:#222}
+.demo{border-top:1px solid #bbb;margin-top:30px;padding-top:26px}.demo-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0}
+.demo-controls button{width:auto;min-width:85px}.demo-controls select{width:260px;margin:0}.demo-controls label{margin:0}
+#scene{font-size:20px;font-family:Georgia,serif}.tree-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 10px}
+.tree-panel{border:1px solid #ccc;background:white;border-radius:12px;padding:18px}.tree-panel h3{margin:0;font-size:15px}
+.tree-panel svg{width:100%;height:300px;overflow:visible}
+.tree-panel circle{fill:#fff;stroke:#222;stroke-width:1.5}.tree-panel text{font-family:Arial,sans-serif;font-size:13px;text-anchor:middle;dominant-baseline:middle}
+.tree-panel line{stroke:#999;stroke-width:1.5}.tree-panel .active circle{fill:#191919}.tree-panel .active text{fill:white}
+.tree-stats{font-size:12px;color:#555}#step-number{font-size:12px;color:#666}#download{color:#222;border-color:#999}
+@media(max-width:900px){header{position:static;width:auto;height:auto;flex-direction:row}main{margin:0 10px 10px;padding:24px}.tree-grid{grid-template-columns:1fr}h1{font-size:34px}}
+</style>
+<header><b>UNDERQUALIFIED</b><span>Project 3 / Live experiment</span></header>
+<main><div class="eyebrow">Search trees under long-running churn</div><h1>Same keys. Different paths.</h1><p class="intro">Watch four tree strategies evolve on one shared workload. Each pair deletes a live key and inserts an absent key, keeping the population fixed.</p>
+
+<section class="demo">
+<div class="heading"><h2>See the tree rearrange</h2><span id="step-number"></span></div>
+<p>Insert keys 1–15, then delete 8, 4, 12, 2 and 14. Hibbard begins as a chain; Scapegoat rebuilds during insertion. The fifth deletion leaves 10 keys, crossing the shrink threshold 10 < 0.7 × 15 and triggering a whole-tree rebuild. Use Next, or Reset → Play for the full sequence.</p>
+<div class="demo-controls">
+<label for="scenario">Example</label><select id="scenario"><option value="delete">Delete 4, then reinsert it</option><option value="rebuild" selected>Insert, delete & rebuild</option></select>
+<button type="button" id="back">← Back</button><button type="button" id="next">Next →</button><button type="button" id="play">Play</button><button type="button" id="reset-demo">Reset</button>
+</div>
+<div id="scene" role="status">Loading tree snapshots…</div>
+<div class="tree-grid" id="trees"></div>
+<small>Each frame is a verified C++ tree state after one operation. Movement connects the before-and-after positions; internal rotations are summarized by the DSW rotation counter.</small>
+</section>
+<div class="layout"><aside><form id="form"><div><label for="n">Live keys</label><input id="n" type="number" min="1" max="4000" value="1000" required></div><div><label for="pairs">Churn pairs</label><input id="pairs" type="number" min="1" max="16000000" value="1000000" required></div><div><label for="mode">Workload</label><select id="mode"><option value="random">Ordinary random</option><option value="exact">Uniform exact fit</option><option value="shallow_exact">Shallow exact fit</option><option value="shallow_fresh">Shallow fresh keys</option></select></div><div><label for="seed">Seed</label><input id="seed" value="42" inputmode="numeric" pattern="[0-9]+" required></div><button id="run">Run experiment ↗</button><button id="stop" type="button" disabled>Stop</button></form><p><small>Live checkpoints from the project's C++ simulator. Scapegoat α = 0.7. Every checkpoint validates tree invariants and the live-key set.</small></p></aside>
+<section><div class="panel"><div class="heading"><h2>Average node depth</h2><span id="status" role="status">Ready to run</span></div><div class="legend" id="legend"></div><canvas id="chart" aria-label="Average node depth versus completed churn pairs"></canvas><progress id="progress" value="0" max="1"></progress><div class="foot"><span id="counter">0 pairs completed</span><span>Depth in edges · root = 0</span></div></div><div class="cards" id="cards"></div><p id="error" role="alert"></p><button id="download" disabled>Download checkpoints CSV ↓</button><p><small>The dashed line marks 2 ln(n), the random-insertion reference. The dotted line marks √n, the exact-fit scaling reference. These references do not predict every finite churn trajectory.</small></p></section></div></main>
+<script>
+const names=['hibbard_successor','hibbard_randomized','scapegoat_array','scapegoat_stout_warren'];
+const labels=['Hibbard · successor','Hibbard · randomized','Scapegoat · array','Scapegoat · DSW'];
+const colors=['#111111','#777777','#385a6a','#a58965'];
+const $=id=>document.getElementById(id);let data=names.map(()=>[]),rows=[],controller=null,total=1000000,population=1000,frame=0;
+$('legend').innerHTML=labels.map((l,i)=>'<span><i style="background:'+colors[i]+'"></i>'+l+'</span>').join('');
+$('cards').innerHTML=labels.map((l,i)=>'<div class="card" style="--color:'+colors[i]+'"><h3>'+l+'</h3><div class="value" id="value'+i+'">—</div><div class="detail" id="detail'+i+'">Awaiting first checkpoint</div></div>').join('');
+function draw(){
+const c=$('chart'),dpr=devicePixelRatio||1,w=c.clientWidth,h=320;c.width=w*dpr;c.height=h*dpr;const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+const left=40,right=w-12,top=14,bottom=280,max=Math.max(2*Math.log(population),Math.sqrt(population),...data.flat().map(r=>+r.average_depth),1)*1.12;
+ctx.font='10px system-ui';ctx.fillStyle='#666';
+for(let i=0;i<=4;i++){let y=bottom-(bottom-top)*i/4;ctx.strokeStyle='#ddd';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();ctx.fillText((max*i/4).toFixed(1),0,y+3);ctx.fillText(Math.round(total*i/4).toLocaleString(),left+(right-left)*i/4-15,304)}
+[2*Math.log(population),Math.sqrt(population)].forEach((v,i)=>{ctx.setLineDash(i?[2,4]:[6,5]);ctx.strokeStyle='#b4beb0';ctx.beginPath();ctx.moveTo(left,bottom-v/max*(bottom-top));ctx.lineTo(right,bottom-v/max*(bottom-top));ctx.stroke()});ctx.setLineDash([]);
+data.forEach((series,i)=>{ctx.strokeStyle=colors[i];ctx.lineWidth=2;ctx.beginPath();series.forEach((r,j)=>{const x=left+(+r.pairs_done)/total*(right-left),y=bottom-(+r.average_depth)/max*(bottom-top);j?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke()});
+}
+function accept(r){const i=names.indexOf(r.strategy);if(i<0)throw Error('Unknown strategy '+r.strategy);rows.push(r);data[i].push(r);$('value'+i).textContent=(+r.average_depth).toFixed(2);$('detail'+i).textContent='Height '+r.height+' · Live '+r.live_size+'\nRebuilds '+r.rebuild_events+' · Nodes rebuilt '+r.nodes_rebuilt;const completed=+r.pairs_done;$('progress').value=completed/total;$('counter').textContent=completed.toLocaleString()+' / '+total.toLocaleString()+' pairs';cancelAnimationFrame(frame);frame=requestAnimationFrame(draw)}
+$('form').onsubmit=async e=>{e.preventDefault();if(controller)return;controller=new AbortController();data=names.map(()=>[]);rows=[];population=+$('n').value;total=+$('pairs').value;$('error').textContent='';$('run').disabled=true;$('stop').disabled=false;$('download').disabled=true;$('status').textContent='Running · validating checkpoints';$('progress').value=0;labels.forEach((_,i)=>{$('value'+i).textContent='—';$('detail'+i).textContent='Awaiting first checkpoint'});draw();
+try{const params=new URLSearchParams({n:population,pairs:total,seed:$('seed').value,mode:$('mode').value});const res=await fetch('/run?'+params,{signal:controller.signal});if(!res.ok)throw Error(await res.text());const reader=res.body.getReader(),decoder=new TextDecoder();let buffer='',done=false;
+while(true){const result=await reader.read();if(result.done)break;buffer+=decoder.decode(result.value,{stream:true});let pos;while((pos=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,pos);buffer=buffer.slice(pos+1);if(!line)continue;const r=JSON.parse(line);if(r.error)throw Error(r.error);if(r.done){done=true;$('status').textContent='Complete · all checkpoints passed'}else accept(r)}}if(!done)throw Error('Stream ended before completion');
+}catch(err){$('status').textContent=err.name==='AbortError'?'Stopped':'Run failed';if(err.name!=='AbortError')$('error').textContent=err.message}finally{controller=null;$('run').disabled=false;$('stop').disabled=true;$('download').disabled=!rows.length}};
+$('stop').onclick=()=>controller?.abort();
+$('download').onclick=()=>{const fields=Object.keys(rows[0]),text=[fields.join(','),...rows.map(r=>fields.map(f=>r[f]).join(','))].join('\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv'})),a=document.createElement('a');a.href=url;a.download='churn-checkpoints.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+new ResizeObserver(draw).observe($('chart'));draw();
+
+let snapshots=[],step=0,timer=null,animation=0;
+const ns='http://www.w3.org/2000/svg';
+function el(tag,attrs={}){const item=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attrs))item.setAttribute(key,value);return item}
+$('trees').innerHTML=labels.map((label,i)=>'<div class="tree-panel"><h3>'+label+'</h3><svg id="tree'+i+'" viewBox="0 0 500 310" aria-label="'+label+' tree"></svg><div class="tree-stats" id="stats'+i+'"></div></div>').join('');
+function positions(nodes){
+ const points=new Map();let rank=0,depthMax=0;
+ function visit(i,depth){if(i<0)return;const [key,left,right]=nodes[i];visit(left,depth+1);points.set(key,{x:++rank,depth});depthMax=Math.max(depthMax,depth);visit(right,depth+1)}
+ if(nodes.length)visit(0,0);
+ for(const point of points.values()){point.x=25+point.x*450/(nodes.length+1);point.y=25+point.depth*250/Math.max(4,depthMax)}
+ return points;
+}
+function pause(){clearInterval(timer);timer=null;$('play').textContent='Play'}
+function renderTree(){
+ cancelAnimationFrame(animation);
+ const frame=snapshots[step];if(!frame)return;
+ $('scene').textContent=frame.operation==='S'?(frame.trees[0].nodes.length?'Start with keys 1–7':'Start with an empty tree'):(frame.operation==='D'?'Delete ':'Insert ')+frame.key;
+ if($('scenario').value==='rebuild' && frame.operation==='D') $('scene').textContent += step===20?' · 10 keys remain → whole-tree rebuild':' · '+frame.trees[0].nodes.length+' keys remain';
+ $('step-number').textContent='Frame '+(step+1)+' / '+snapshots.length;
+ $('back').disabled=step===0;$('next').disabled=step===snapshots.length-1;
+ const views=frame.trees.map((tree,i)=>{
+ const svg=$('tree'+i),old=new Map([...svg.querySelectorAll('g[data-key]')].map(g=>[+g.dataset.key,{x:+g.dataset.x,y:+g.dataset.y}]));
+ svg.replaceChildren();const target=positions(tree.nodes),groups=new Map(),edges=[];
+ tree.nodes.forEach(([key,l,r])=>{for(const child of [l,r])if(child>=0){const line=el('line');svg.append(line);edges.push([line,key,tree.nodes[child][0]])}});
+ tree.nodes.forEach(([key])=>{const group=el('g',{'data-key':key,class:key===frame.key&&frame.operation!=='S'?'active':''});group.append(el('circle',{r:tree.nodes.length>10?11:17}));const text=el('text');text.textContent=key;group.append(text);svg.append(group);groups.set(key,group)});
+ const previous=step?snapshots[step-1].trees[i]:null,delta=previous?tree.rebuilds-previous.rebuilds:0;
+ $('stats'+i).textContent='Nodes '+tree.nodes.length+' · Mean depth '+tree.depth.toFixed(2)+' · Rebuilds '+tree.rebuilds+' · Rotations '+tree.rotations+(delta>0?' · REBUILT THIS STEP':'');
+ if(!tree.nodes.length){const text=el('text',{x:250,y:145});text.textContent='Empty tree';svg.append(text)}
+ return {target,old,groups,edges};
+ });
+ const start=performance.now();
+ function animate(now){const t=Math.min(1,(now-start)/600),ease=1-Math.pow(1-t,3);
+ for(const view of views){const current=new Map();for(const [key,to] of view.target){const from=view.old.get(key)||{x:to.x,y:0};const x=from.x+(to.x-from.x)*ease,y=from.y+(to.y-from.y)*ease;current.set(key,{x,y});const g=view.groups.get(key);g.setAttribute('transform','translate('+x+','+y+')');g.dataset.x=x;g.dataset.y=y}for(const [line,a,b] of view.edges){const p=current.get(a),q=current.get(b);for(const [attr,value] of Object.entries({x1:p.x,y1:p.y,x2:q.x,y2:q.y}))line.setAttribute(attr,value)}}
+ if(t<1)animation=requestAnimationFrame(animate)}
+ animation=requestAnimationFrame(animate);
+}
+async function loadDemo(){pause();$('scene').textContent='Loading tree snapshots…';try{const response=await fetch('/demo?mode='+$('scenario').value);if(!response.ok)throw Error('Build tree_demo and restart the server to load tree snapshots.');snapshots=await response.json();step=$('scenario').value==='rebuild'?10:0;renderTree()}catch(error){$('scene').textContent=error.message}}
+$('next').onclick=()=>{pause();if(step<snapshots.length-1){step++;renderTree()}};
+$('back').onclick=()=>{pause();if(step>0){step--;renderTree()}};
+$('reset-demo').onclick=()=>{pause();step=0;renderTree()};
+$('play').onclick=()=>{if(timer){pause();return}if(!snapshots.length)return;if(step===snapshots.length-1)step=0;renderTree();$('play').textContent='Pause';timer=setInterval(()=>{if(step>=snapshots.length-1){pause();return}step++;renderTree()},1400)};
+$('scenario').onchange=loadDemo;loadDemo();
+</script></html>

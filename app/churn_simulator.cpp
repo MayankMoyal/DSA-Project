@@ -123,6 +123,7 @@ void simulate(Generator& generator, int n, std::uint64_t pairs, std::uint64_t se
                       << stats.count << ',' << trace_hash.get() << ',' << stats.rebuild_events
                       << ',' << stats.nodes_rebuilt << ',' << stats.rotations << '\n';
         });
+        std::cout.flush();
         if (!std::cout) throw std::runtime_error("could not write CSV");
     };
 
