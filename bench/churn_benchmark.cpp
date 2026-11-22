@@ -4,6 +4,8 @@
 #include "scapegoat_tree.h"
 #include "baseline.h"
 #include "degradation.h"
+#include "cli.h"
+#include <limits>
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
@@ -41,13 +43,18 @@ Options parseOptions(int argc, char** argv) {
     if (argc < 6 || argc > 9) {
         throw std::invalid_argument("usage: churn_benchmark [--quick | n pairs seed trial workload [checkpoint [strategy [alpha]]]]; workload = random|exact|shallow_exact|shallow_fresh");
     }
-    options.n = std::stoi(argv[1]);
-    options.pairs = std::stoull(argv[2]);
-    options.seed = std::stoull(argv[3]);
-    options.trial = std::stoi(argv[4]);
+    options.n = adversary::populationArgument(argv[1]);
+    options.pairs = adversary::unsignedArgument(argv[2], "pairs");
+    options.seed = adversary::unsignedArgument(argv[3], "seed");
+
+    const auto trial = adversary::unsignedArgument(argv[4], "trial");
+    if (trial == 0 || trial > std::numeric_limits<int>::max()) {
+        throw std::invalid_argument("trial must be positive and fit in int");
+    }
+    options.trial = static_cast<int>(trial);
     options.mode = argv[5];
     if (argc >= 7) {
-        options.checkpoint = std::stoull(argv[6]);
+        options.checkpoint = adversary::unsignedArgument(argv[6], "checkpoint");
     } else {
         options.checkpoint = static_cast<std::uint64_t>(options.n);
     }
@@ -55,7 +62,13 @@ Options parseOptions(int argc, char** argv) {
         options.strategy = argv[7];
     }
     if (argc == 9) {
-        options.alpha = std::stod(argv[8]);
+        const std::string token = argv[8];
+        std::size_t used = 0;
+        options.alpha = std::stod(token, &used);
+        if (used != token.size() ||
+            token.find_first_of(" \t\r\n\f\v") != std::string::npos) {
+            throw std::invalid_argument("alpha must be a single number");
+        }
     }
     if (!std::isfinite(options.alpha) || options.alpha <= 0.5 || options.alpha >= 1.0) {
         throw std::invalid_argument("alpha must be strictly between 0.5 and 1.0");

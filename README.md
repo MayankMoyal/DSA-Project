@@ -27,7 +27,7 @@ asymptotic proof.
 
 - C++17 compiler, CMake 3.16 or newer, and Python 3.8 or newer.
 - Windows: GCC/MinGW-w64 (`g++` and `mingw32-make` on PATH). Linux: GCC and Make.
-- Python plotting/export packages: `python -m pip install -r scripts/requirements.txt`.
+- Plotting and PDF export require Python 3.9 or newer. Install the packages with `python -m pip install -r scripts/requirements.txt`.
 - Development checks used Windows 11, GCC 16.2.0 and Python 3.11. Recorded timing
   studies used different stated machines/compilers; see [REPORT.md](REPORT.md).
 - Standard library containers support generators, traversals and the oracle;
@@ -173,7 +173,7 @@ Targeted reference experiments are reported separately in
 
 ## Known limitations
 
-- The final slides, final release tag and instructor submission are pending.
+- The final release tag and instructor submission are pending.
 - Derivation PDFs retain their authors' content; several still need length and
   authorship details checked against the final one-to-two-page requirement.
 - Historical reference churn timings require a separate recorded implementation
@@ -184,7 +184,7 @@ Targeted reference experiments are reported separately in
 
 ## Tools and references
 
-See [TOOLS.md](TOOLS.md), [TOOLS_ARCHITECT.md](TOOLS_ARCHITECT.md), the per-module
+See [TOOLS.md](TOOLS.md), the per-module
 records, and [REPORT.md](REPORT.md) section 13. Key sources are Hibbard (1962),
 Eppinger (1983), Culberson and Munro (1990), Galperin and Rivest (1993),
 Stout and Warren (1986), and Bayer and McCreight (1972).

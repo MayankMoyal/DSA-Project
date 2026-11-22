@@ -42,7 +42,10 @@ def main():
         with output.open("w", encoding="utf-8", newline="") as stream:
             subprocess.run(command, stdout=stream, check=True)
         print(f"Saved {output}", flush=True)
-    print("Completed successfully. Verify with scripts/plot_alpha055.py and compare with recorded results.")
+    if args.quick:
+        print(f"Quick run complete. CSV saved in {args.output}")
+    else:
+        print(f'Verify the full study with: python scripts/plot_alpha055.py --input "{args.output}"')
 
 
 if __name__ == "__main__":

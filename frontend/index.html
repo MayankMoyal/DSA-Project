@@ -96,7 +96,32 @@ function renderTree(){
  if(t<1)animation=requestAnimationFrame(animate)}
  animation=requestAnimationFrame(animate);
 }
-async function loadDemo(){pause();$('scene').textContent='Loading tree snapshots…';try{const response=await fetch('/demo?mode='+$('scenario').value);if(!response.ok)throw Error('Build tree_demo and restart the server to load tree snapshots.');snapshots=await response.json();step=$('scenario').value==='rebuild'?10:0;renderTree()}catch(error){$('scene').textContent=error.message}}
+let latestDemoRequest = 0;
+
+async function loadDemo() {
+    const request = ++latestDemoRequest;
+    const mode = $('scenario').value;
+    pause();
+    $('scene').textContent = 'Loading tree snapshots…';
+
+    try {
+        const response = await fetch('/demo?mode=' + mode);
+        if (!response.ok) {
+            throw Error('Build tree_demo and restart the server to load tree snapshots.');
+        }
+
+        const frames = await response.json();
+        if (request !== latestDemoRequest) return;
+
+        snapshots = frames;
+        step = mode === 'rebuild' ? 10 : 0;
+        renderTree();
+    } catch (error) {
+        if (request === latestDemoRequest) {
+            $('scene').textContent = error.message;
+        }
+    }
+}
 $('next').onclick=()=>{pause();if(step<snapshots.length-1){step++;renderTree()}};
 $('back').onclick=()=>{pause();if(step>0){step--;renderTree()}};
 $('reset-demo').onclick=()=>{pause();step=0;renderTree()};
